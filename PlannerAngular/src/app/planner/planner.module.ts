@@ -5,6 +5,7 @@ import { PlannerViewComponent } from './planner-view/planner-view.component';
 import { FormsModule } from '@angular/forms';
 import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { FlatpickrModule } from 'angularx-flatpickr';
+import {ShContextMenuModule} from 'ng2-right-click-menu'
 
 @NgModule({
   declarations: [PlannerViewComponent],
@@ -13,7 +14,8 @@ import { FlatpickrModule } from 'angularx-flatpickr';
     CalendarModule,
     FormsModule,
     NgbModalModule,
-    FlatpickrModule
+    FlatpickrModule,
+    ShContextMenuModule
   ],
   exports : [
     PlannerViewComponent

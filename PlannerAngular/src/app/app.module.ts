@@ -16,6 +16,7 @@ import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { PlannerModule } from './planner/planner.module';
 import { FlatpickrModule } from 'angularx-flatpickr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {ShContextMenuModule} from 'ng2-right-click-menu'
 
 @NgModule({
     imports: [
@@ -26,7 +27,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
         CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
         FlatpickrModule.forRoot(),
         PlannerModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
+        ShContextMenuModule
     ],
     declarations: [
         AppComponent,
