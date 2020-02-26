@@ -13,7 +13,8 @@ import {
   endOfMonth,
   isSameDay,
   isSameMonth,
-  addHours
+  addHours,
+  parseISO
 } from 'date-fns';
 import { Subject } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -23,6 +24,8 @@ import {
   CalendarEventTimesChangedEvent,
   CalendarView
 } from 'angular-calendar';
+
+import { ContextMenuComponent } from 'ngx-contextmenu';
 
 const colors: any = {
   red: {
@@ -44,8 +47,14 @@ const colors: any = {
   templateUrl: './planner-view.component.html',
   styleUrls: ['./planner-view.component.less']
 })
+
+// Code
 export class PlannerViewComponent {
   @ViewChild('modalContent', { static: true }) modalContent: TemplateRef<any>;
+
+  @ViewChild(ContextMenuComponent, { static: true }) public basicMenu: ContextMenuComponent;
+
+  @ViewChild('newEventContent', {static: true}) newEventContent: TemplateRef<any>;
 
   view: CalendarView = CalendarView.Month;
 
@@ -58,6 +67,7 @@ export class PlannerViewComponent {
     event: CalendarEvent;
   };
 
+  
   actions: CalendarEventAction[] = [
     {
       label: '<i class="fa fa-fw fa-pencil"></i>',
@@ -157,13 +167,13 @@ export class PlannerViewComponent {
     this.modal.open(this.modalContent, { size: 'lg' });
   }
 
-  addEvent(): void {
+  addEvent(eventTitle: string, dateFrom: string, dateTo: string): void {
     this.events = [
       ...this.events,
       {
-        title: 'New event',
-        start: startOfDay(new Date()),
-        end: endOfDay(new Date()),
+        title: eventTitle,
+        start: parseISO(dateFrom),
+        end: parseISO(dateTo),
         color: colors.red,
         draggable: true,
         resizable: {
@@ -185,7 +195,9 @@ export class PlannerViewComponent {
   closeOpenMonthViewDay() {
     this.activeDayIsOpen = false;
   }
-  onRightClick(event){
-    console.log(event);
+
+  newEvent() : void {
+    console.log("G");
+    this.modal.open(this.newEventContent);
   }
 }

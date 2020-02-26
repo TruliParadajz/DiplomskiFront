@@ -14,9 +14,10 @@ import { AlertComponent } from './_alert';;
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { PlannerModule } from './planner/planner.module';
+
 import { FlatpickrModule } from 'angularx-flatpickr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {ShContextMenuModule} from 'ng2-right-click-menu'
+
 
 @NgModule({
     imports: [
@@ -24,11 +25,10 @@ import {ShContextMenuModule} from 'ng2-right-click-menu'
         ReactiveFormsModule,
         HttpClientModule,
         appRoutingModule,
-        CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
         FlatpickrModule.forRoot(),
+        CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
         PlannerModule,
-        BrowserAnimationsModule,
-        ShContextMenuModule
+        BrowserAnimationsModule        
     ],
     declarations: [
         AppComponent,

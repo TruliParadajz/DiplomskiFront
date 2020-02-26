@@ -32,10 +32,11 @@
   </div>
 </div>
 <br />
-<div [ngSwitch]="view">
+<div [ngSwitch]="view" class="mat-app-background basic-container" style="position: relative">
   <mwl-calendar-month-view *ngSwitchCase="CalendarView.Month" [viewDate]="viewDate" [events]="events"
     [refresh]="refresh" [activeDayIsOpen]="activeDayIsOpen" (dayClicked)="dayClicked($event.day)"
-    (eventClicked)="handleEvent('Clicked', $event.event)" (eventTimesChanged)="eventTimesChanged($event)" (contextmenu)="onRightClick()">
+    (eventClicked)="handleEvent('Clicked', $event.event)" (eventTimesChanged)="eventTimesChanged($event)"
+    [cellTemplate]="customCellTemplate">
   </mwl-calendar-month-view>
   <mwl-calendar-week-view *ngSwitchCase="CalendarView.Week" [viewDate]="viewDate" [events]="events" [refresh]="refresh"
     (eventClicked)="handleEvent('Clicked', $event.event)" (eventTimesChanged)="eventTimesChanged($event)">
@@ -49,13 +50,13 @@
 
 <br /><br /><br />
 
-<h3>
+<!-- <h3>
   Edit events
   <button class="btn btn-primary pull-right" (click)="addEvent()">
     Add new
   </button>
   <div class="clearfix"></div>
-</h3>
+</h3> -->
 
 <div class="table-responsive">
   <table class="table table-bordered">
@@ -82,14 +83,14 @@
           <input type="color" [(ngModel)]="event.color.secondary" (change)="refresh.next()" />
         </td>
         <td>
-          <!-- <input class="form-control" type="text" mwlFlatpickr [(ngModel)]="event.start"
+          <input class="form-control" type="text" mwlFlatpickr [(ngModel)]="event.start"
             (ngModelChange)="refresh.next()" [altInput]="true" [convertModelValue]="true" [enableTime]="true"
-            dateFormat="Y-m-dTH:i" altFormat="F j, Y H:i" placeholder="Not set" /> -->
+            [time24hr]="true" dateFormat="Y-m-dTH:i" altFormat="F j, Y H:i" placeholder="Not set" />
         </td>
         <td>
-          <!-- <input class="form-control" type="text" mwlFlatpickr [(ngModel)]="event.end" (ngModelChange)="refresh.next()"
-            [altInput]="true" [convertModelValue]="true" [enableTime]="true" dateFormat="Y-m-dTH:i"
-            altFormat="F j, Y H:i" placeholder="Not set" /> -->
+          <input class="form-control" type="text" mwlFlatpickr [(ngModel)]="event.end" (ngModelChange)="refresh.next()"
+            [altInput]="true" [convertModelValue]="true" [enableTime]="true" [time24hr]="true" dateFormat="Y-m-dTH:i"
+            altFormat="F j, Y H:i" placeholder="Not set" />
         </td>
         <td>
           <button class="btn btn-danger" (click)="deleteEvent(event)">
@@ -110,25 +111,97 @@
   </div>
   <div class="modal-body">
     <div>
-      Action:
-      <pre>{{ modalData?.action }}</pre>
+      Event:
+      <input type="text" class="form-control"/>
     </div>
     <div>
-      Event:
-      <pre>{{ modalData?.event | json }}</pre>
+      <br>
+      <table class="table table-bordered" id="dateTable">
+        <thead>
+          <tr>
+            <th>Date From</th>
+            <th>Date To</th>
+          </tr>
+        </thead>
+        <tbody>
+          <td>
+            <input class="form-control" type="text" mwlFlatpickr 
+              (ngModelChange)="refresh.next()" [altInput]="true" [convertModelValue]="true" [enableTime]="true"
+              [time24hr]="true" dateFormat="Y-m-dTH:i" altFormat="F j, Y H:i" placeholder="Not set" />
+          </td>
+          <td> 
+            <input class="form-control" type="text" mwlFlatpickr (ngModelChange)="refresh.next()"
+              [altInput]="true" [convertModelValue]="true" [enableTime]="true" [time24hr]="true" dateFormat="Y-m-dTH:i"
+              altFormat="F j, Y H:i" placeholder="Not set" />
+          </td>
+        </tbody>
+      </table>
     </div>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline-secondary" (click)="close()">
-      OK
+      CREATE
     </button>
   </div>
 </ng-template>
 
-<sh-context-menu #rightClickMenu>
-  <ng-template shContextMenuItem let-data (click)="onRightClick($event)">
-    <div>
-      Menu Item - {{data.label}}
-    </div>
+<ng-template #customCellTemplate let-day="day" let-locale="locale" >
+  <div class="cal-cell-top" [contextMenu]="basicMenu">
+    <span class="cal-day-badge" *ngIf="day.badgeTotal > 0">{{ day.badgeTotal }}</span>
+  </div>
+</ng-template>
+
+<context-menu>
+  <ng-template contextMenuItem (execute)="newEvent()">
+    Add a New Task
   </ng-template>
-</sh-context-menu>
+  <ng-template contextMenuItem divider="true"></ng-template>
+  <ng-template contextMenuItem >
+    Item 2
+  </ng-template>
+</context-menu>
+
+<ng-template #newEventContent let-close="close">
+  <div class="modal-header">
+    <h5 class="modal-title">Add a new Event</h5>
+    <button type="button" class="close" (click)="close()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form>
+  <div class="modal-body">
+    <div>
+      Event:
+      <input #eventTitle type="text" class="form-control" name="eventTitle"/>
+    </div>
+    <div>
+      <br>
+      <table class="table table-bordered" id="dateTable">
+        <thead>
+          <tr>
+            <th>Date From</th>
+            <th>Date To</th>
+          </tr>
+        </thead>
+        <tbody>
+          <td>
+            <input #dateFrom class="form-control" type="text" mwlFlatpickr name="dateFrom"
+              (ngModelChange)="refresh.next()" [altInput]="true" [convertModelValue]="true" [enableTime]="true"
+              [time24hr]="true" dateFormat="Y-m-dTH:i" altFormat="F j, Y H:i" placeholder="Not set" />
+          </td>
+          <td> 
+            <input #dateTo class="form-control" type="text" mwlFlatpickr name="dateTo" (ngModelChange)="refresh.next()"
+              [altInput]="true" [convertModelValue]="true" [enableTime]="true" [time24hr]="true" dateFormat="Y-m-dTH:i"
+              altFormat="F j, Y H:i" placeholder="Not set" />
+          </td>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</form>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="addEvent(eventTitle.value, dateFrom.value, dateTo.value)">
+      CREATE
+    </button>
+  </div>
+</ng-template>
