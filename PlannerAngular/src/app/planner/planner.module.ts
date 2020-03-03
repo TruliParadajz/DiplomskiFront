@@ -8,9 +8,10 @@ import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import 'flatpickr/dist/flatpickr.css'; // you may need to adjust the css import depending on your build tool
 import { FlatpickrModule } from 'angularx-flatpickr';
 import { ContextMenuModule } from 'ngx-contextmenu';
+import { EventContentComponent } from './event-content/event-content.component';
 
 @NgModule({
-  declarations: [PlannerViewComponent],
+  declarations: [PlannerViewComponent, EventContentComponent],
   imports: [
     CommonModule,
     CalendarModule,

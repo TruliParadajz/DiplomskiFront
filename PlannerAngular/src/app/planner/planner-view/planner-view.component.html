@@ -35,20 +35,16 @@
 <div [ngSwitch]="view" class="mat-app-background basic-container" style="position: relative">
   <mwl-calendar-month-view *ngSwitchCase="CalendarView.Month" [viewDate]="viewDate" [events]="events"
     [refresh]="refresh" [activeDayIsOpen]="activeDayIsOpen" (dayClicked)="dayClicked($event.day)"
-    (eventClicked)="handleEvent('Clicked', $event.event)" (eventTimesChanged)="eventTimesChanged($event)"
+    (eventClicked)="editEvent($event.event)" (eventTimesChanged)="eventTimesChanged($event)"
     [cellTemplate]="customCellTemplate">
   </mwl-calendar-month-view>
   <mwl-calendar-week-view *ngSwitchCase="CalendarView.Week" [viewDate]="viewDate" [events]="events" [refresh]="refresh"
-    (eventClicked)="handleEvent('Clicked', $event.event)" (eventTimesChanged)="eventTimesChanged($event)">
+    (eventClicked)="editEvent($event.event)" (eventTimesChanged)="eventTimesChanged($event)">
   </mwl-calendar-week-view>
   <mwl-calendar-day-view *ngSwitchCase="CalendarView.Day" [viewDate]="viewDate" [events]="events" [refresh]="refresh"
-    (eventClicked)="handleEvent('Clicked', $event.event)" (eventTimesChanged)="eventTimesChanged($event)">
+    (eventClicked)="editEvent($event.event)" (eventTimesChanged)="eventTimesChanged($event)">
   </mwl-calendar-day-view>
 </div>
-
-<!-- Everything you see below is just for the demo, you don't need to include it in your app -->
-
-<br /><br /><br />
 
 <!-- <h3>
   Edit events
@@ -58,7 +54,7 @@
   <div class="clearfix"></div>
 </h3> -->
 
-<div class="table-responsive">
+<!-- <div class="table-responsive">
   <table class="table table-bordered">
     <thead>
       <tr>
@@ -100,108 +96,29 @@
       </tr>
     </tbody>
   </table>
-</div>
+</div> -->
 
-<ng-template #modalContent let-close="close">
-  <div class="modal-header">
-    <h5 class="modal-title">Event action occurred</h5>
-    <button type="button" class="close" (click)="close()">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="modal-body">
-    <div>
-      Event:
-      <input type="text" class="form-control"/>
-    </div>
-    <div>
-      <br>
-      <table class="table table-bordered" id="dateTable">
-        <thead>
-          <tr>
-            <th>Date From</th>
-            <th>Date To</th>
-          </tr>
-        </thead>
-        <tbody>
-          <td>
-            <input class="form-control" type="text" mwlFlatpickr 
-              (ngModelChange)="refresh.next()" [altInput]="true" [convertModelValue]="true" [enableTime]="true"
-              [time24hr]="true" dateFormat="Y-m-dTH:i" altFormat="F j, Y H:i" placeholder="Not set" />
-          </td>
-          <td> 
-            <input class="form-control" type="text" mwlFlatpickr (ngModelChange)="refresh.next()"
-              [altInput]="true" [convertModelValue]="true" [enableTime]="true" [time24hr]="true" dateFormat="Y-m-dTH:i"
-              altFormat="F j, Y H:i" placeholder="Not set" />
-          </td>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="close()">
-      CREATE
-    </button>
-  </div>
-</ng-template>
-
-<ng-template #customCellTemplate let-day="day" let-locale="locale" >
-  <div class="cal-cell-top" [contextMenu]="basicMenu">
+<!-- Custom Cell Template -->
+<ng-template #customCellTemplate let-day="day" let-locale="locale">
+  <div class="cal-cell-top" [contextMenu]="basicMenu" [contextMenuSubject]="day.date">
     <span class="cal-day-badge" *ngIf="day.badgeTotal > 0">{{ day.badgeTotal }}</span>
+    <span class="cal-day-number">{{ day.date | calendarDate:'monthViewDayNumber':locale }}</span>
   </div>
 </ng-template>
 
+<!-- Right Click Menu -->
 <context-menu>
-  <ng-template contextMenuItem (execute)="newEvent()">
+  <ng-template contextMenuItem (execute)="newEvent($event.item)">
     Add a New Task
   </ng-template>
   <ng-template contextMenuItem divider="true"></ng-template>
-  <ng-template contextMenuItem >
-    Item 2
+  <ng-template contextMenuItem>
+    Clear the day
   </ng-template>
 </context-menu>
 
-<ng-template #newEventContent let-close="close">
-  <div class="modal-header">
-    <h5 class="modal-title">Add a new Event</h5>
-    <button type="button" class="close" (click)="close()">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <form>
-  <div class="modal-body">
-    <div>
-      Event:
-      <input #eventTitle type="text" class="form-control" name="eventTitle"/>
-    </div>
-    <div>
-      <br>
-      <table class="table table-bordered" id="dateTable">
-        <thead>
-          <tr>
-            <th>Date From</th>
-            <th>Date To</th>
-          </tr>
-        </thead>
-        <tbody>
-          <td>
-            <input #dateFrom class="form-control" type="text" mwlFlatpickr name="dateFrom"
-              (ngModelChange)="refresh.next()" [altInput]="true" [convertModelValue]="true" [enableTime]="true"
-              [time24hr]="true" dateFormat="Y-m-dTH:i" altFormat="F j, Y H:i" placeholder="Not set" />
-          </td>
-          <td> 
-            <input #dateTo class="form-control" type="text" mwlFlatpickr name="dateTo" (ngModelChange)="refresh.next()"
-              [altInput]="true" [convertModelValue]="true" [enableTime]="true" [time24hr]="true" dateFormat="Y-m-dTH:i"
-              altFormat="F j, Y H:i" placeholder="Not set" />
-          </td>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</form>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="addEvent(eventTitle.value, dateFrom.value, dateTo.value)">
-      CREATE
-    </button>
-  </div>
+<!-- Context Menu -->
+<ng-template #eventContent let-close="close">
+  <app-event-content (eventAdded)="eventAdded($event)" (modalClosed)="closeModal($event)"
+    (eventEdited)="eventEdited($event)" (eventDeleted)="eventDeleted($event)" [inputEvent]="inputEvent" [isDelete]="isDelete"></app-event-content>
 </ng-template>

@@ -13,8 +13,7 @@ import {
   endOfMonth,
   isSameDay,
   isSameMonth,
-  addHours,
-  parseISO
+  addHours
 } from 'date-fns';
 import { Subject } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -26,6 +25,7 @@ import {
 } from 'angular-calendar';
 
 import { ContextMenuComponent } from 'ngx-contextmenu';
+import { CalendarEventActionsComponent } from 'angular-calendar/modules/common/calendar-event-actions.component';
 
 const colors: any = {
   red: {
@@ -54,7 +54,7 @@ export class PlannerViewComponent {
 
   @ViewChild(ContextMenuComponent, { static: true }) public basicMenu: ContextMenuComponent;
 
-  @ViewChild('newEventContent', {static: true}) newEventContent: TemplateRef<any>;
+  @ViewChild('eventContent', { static: true }) eventContent: TemplateRef<any>;
 
   view: CalendarView = CalendarView.Month;
 
@@ -67,21 +67,23 @@ export class PlannerViewComponent {
     event: CalendarEvent;
   };
 
-  
+  inputEvent: CalendarEvent;
+  //Bool value for delete content
+  isDelete: boolean;
+
   actions: CalendarEventAction[] = [
     {
       label: '<i class="fa fa-fw fa-pencil"></i>',
       a11yLabel: 'Edit',
       onClick: ({ event }: { event: CalendarEvent }): void => {
-        this.handleEvent('Edited', event);
+        this.editEvent(event);
       }
     },
     {
       label: '<i class="fa fa-fw fa-times"></i>',
       a11yLabel: 'Delete',
       onClick: ({ event }: { event: CalendarEvent }): void => {
-        this.events = this.events.filter(iEvent => iEvent !== event);
-        this.handleEvent('Deleted', event);
+        this.deleteEvent(event);
       }
     }
   ];
@@ -90,6 +92,7 @@ export class PlannerViewComponent {
 
   events: CalendarEvent[] = [
     {
+      id: 1,
       start: subDays(startOfDay(new Date()), 1),
       end: addDays(new Date(), 1),
       title: 'A 3 day event',
@@ -103,12 +106,14 @@ export class PlannerViewComponent {
       draggable: true
     },
     {
+      id: 2,
       start: startOfDay(new Date()),
       title: 'An event with no end date',
       color: colors.yellow,
       actions: this.actions
     },
     {
+      id: 3,
       start: subDays(endOfMonth(new Date()), 3),
       end: addDays(endOfMonth(new Date()), 3),
       title: 'A long event that spans 2 months',
@@ -116,6 +121,7 @@ export class PlannerViewComponent {
       allDay: true
     },
     {
+      id: 4,
       start: addHours(startOfDay(new Date()), 2),
       end: addHours(new Date(), 2),
       title: 'A draggable and resizable event',
@@ -128,6 +134,14 @@ export class PlannerViewComponent {
       draggable: true
     }
   ];
+
+  initializeEvent(event: CalendarEvent): void {
+    event = {
+      title: null,
+      start: null,
+      end: null
+    };
+  }
 
   activeDayIsOpen: boolean = true;
 
@@ -142,13 +156,10 @@ export class PlannerViewComponent {
       }
       this.viewDate = date;
     }
+    console.log(date);
   }
 
-  eventTimesChanged({
-    event,
-    newStart,
-    newEnd
-  }: CalendarEventTimesChangedEvent): void {
+  eventTimesChanged({ event, newStart, newEnd }: CalendarEventTimesChangedEvent): void {
     this.events = this.events.map(iEvent => {
       if (iEvent === event) {
         return {
@@ -159,33 +170,32 @@ export class PlannerViewComponent {
       }
       return iEvent;
     });
-    this.handleEvent('Dropped or resized', event);
   }
 
-  handleEvent(action: string, event: CalendarEvent): void {
-    this.modalData = { event, action };
-    this.modal.open(this.modalContent, { size: 'lg' });
-  }
+  // handleEvent(action: string, event: CalendarEvent): void {
+  //   this.modalData = { event, action };
+  //   this.modal.open(this.modalContent, { size: 'lg' });
+  // }
 
-  addEvent(eventTitle: string, dateFrom: string, dateTo: string): void {
+  eventAdded(newEventData: CalendarEvent): void {
     this.events = [
       ...this.events,
-      {
-        title: eventTitle,
-        start: parseISO(dateFrom),
-        end: parseISO(dateTo),
-        color: colors.red,
-        draggable: true,
-        resizable: {
-          beforeStart: true,
-          afterEnd: true
-        }
-      }
-    ];
+      newEventData
+    ]
+    this.closeModal();
   }
 
-  deleteEvent(eventToDelete: CalendarEvent) {
-    this.events = this.events.filter(event => event !== eventToDelete);
+  eventEdited(newEventData: CalendarEvent): void {
+    let eventFound = this.events.find(e => e.id === newEventData.id);
+    let index = this.events.indexOf(eventFound);
+    this.events[index] = newEventData;
+    // console.log("edited", newEventData);
+    this.closeModal();
+  }
+
+  eventDeleted(newEventData : CalendarEvent): void {
+    this.events = this.events.filter(event => event !== newEventData);
+    this.closeModal();
   }
 
   setView(view: CalendarView) {
@@ -196,8 +206,40 @@ export class PlannerViewComponent {
     this.activeDayIsOpen = false;
   }
 
-  newEvent() : void {
-    console.log("G");
-    this.modal.open(this.newEventContent);
+  //
+  newEvent(day: Date): void {
+    this.inputEvent = {
+      title: null,
+      start: null,
+      end: null
+    };
+    this.inputEvent.start = day;
+    this.isDelete = false;
+    this.modal.open(this.eventContent);
+  }
+
+  editEvent(event: CalendarEvent) {
+    this.inputEvent = {
+      title: null,
+      start: null,
+      end: null
+    };
+    this.inputEvent = event;
+    this.isDelete = false;
+    this.modal.open(this.eventContent);
+  }
+
+  deleteEvent(eventToDelete: CalendarEvent) {    
+    this.inputEvent = {
+      title: null,
+      start: null,
+      end: null
+    };
+    this.inputEvent = eventToDelete;
+    this.isDelete = true;
+    this.modal.open(this.eventContent)
+  }
+  closeModal(): void {
+    this.modal.dismissAll(this.eventContent);
   }
 }

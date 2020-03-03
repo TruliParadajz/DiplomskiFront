@@ -1,0 +1,58 @@
+<div class="modal-header">
+    <h5 *ngIf="!inputEvent.id && !isDelete" class="modal-title">Add a new Event</h5>
+    <h5 *ngIf="inputEvent.id && !isDelete" class="modal-title">Edit an event</h5>
+    <h5 *ngIf="inputEvent.id && isDelete" class="modal-title">Delete an event</h5>
+    <button type="button" class="close" (click)="closeModal()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form>
+    <div class="modal-body" *ngIf="!isDelete">
+        <div>
+            Event:
+            <input class="form-control" type="text" [(ngModel)]="eventTitle" name="eventTitle" />
+        </div>
+        <div>
+            <br>
+            <table class="table table-bordered" id="dateTable">
+                <thead>
+                    <tr>
+                        <th>Date From</th>
+                        <th>Date To</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <td>
+                        <input class="form-control" type="text" mwlFlatpickr [(ngModel)]="dateFrom" name="dateFrom"
+                            [altInput]="true" [convertModelValue]="true" [enableTime]="true" [time24hr]="true"
+                            dateFormat="Y-m-dTH:i" altFormat="F j, Y H:i" placeholder="Not set" />
+                    </td>
+                    <td>
+                        <input class="form-control" type="text" mwlFlatpickr [(ngModel)]="dateTo" name="dateTo"
+                            [altInput]="true" [convertModelValue]="true" [enableTime]="true" [time24hr]="true"
+                            dateFormat="Y-m-dTH:i" altFormat="F j, Y H:i" placeholder="Not set" />
+                    </td>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal-body" *ngIf="isDelete">
+        <div>
+            Are you sure you want to delete this event?
+        </div>
+    </div>
+</form>
+<div class="modal-footer" *ngIf="!isDelete">
+    <button *ngIf="!inputEvent.id" type="button" class="btn btn-outline-secondary"
+        (click)="addEvent(eventTitle, dateFrom, dateTo)">
+        CREATE
+    </button>
+    <button *ngIf="inputEvent.id" type="button" class="btn btn-outline-secondary"
+        (click)="editEvent(eventTitle, dateFrom, dateTo)">
+        EDIT
+    </button>
+</div>
+<div class="modal-footer" *ngIf="isDelete">
+    <button type="button" class="btn btn-outline-secondary" (click)="deleteEvent()">YES</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">NO</button>
+</div>
