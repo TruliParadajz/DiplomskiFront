@@ -120,5 +120,7 @@
 <!-- Context Menu -->
 <ng-template #eventContent let-close="close">
   <app-event-content (eventAdded)="eventAdded($event)" (modalClosed)="closeModal($event)"
-    (eventEdited)="eventEdited($event)" (eventDeleted)="eventDeleted($event)" [inputEvent]="inputEvent" [isDelete]="isDelete"></app-event-content>
+    (eventEdited)="eventEdited($event)" (eventDeleted)="eventDeleted($event)" [inputEvent]="inputEvent"
+    [isDelete]="isDelete">
+  </app-event-content>
 </ng-template>

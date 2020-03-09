@@ -26,7 +26,7 @@ import {
 
 import { ContextMenuComponent } from 'ngx-contextmenu';
 import { EventTaskServiceService } from '../event-task-service.service';
-import { User } from '@app/_models';
+import { User, EventTaskInput } from '@app/_models';
 import { first } from 'rxjs/operators';
 
 const colors: any = {
@@ -95,70 +95,19 @@ export class PlannerViewComponent {
 
   currentUserSubject: BehaviorSubject<User>;
 
-  ngOnInit(){
+  ngOnInit() {
     this.eventTaskService.getEventTasks(this.currentUserSubject.value.id).subscribe(res => {
       this.events = res;
+      this.events.forEach(element => {
+        element.actions = this.actions
+      });
     });
+    
   }
-
-  
-  // events: CalendarEvent[] = [
-  //   {
-  //     id: 1,
-  //     start: subDays(startOfDay(new Date()), 1),
-  //     end: addDays(new Date(), 1),
-  //     title: 'A 3 day event',
-  //     color: colors.red,
-  //     actions: this.actions,
-  //     allDay: true,
-  //     resizable: {
-  //       beforeStart: true,
-  //       afterEnd: true
-  //     },
-  //     draggable: true
-  //   },
-  //   {
-  //     id: 2,
-  //     start: startOfDay(new Date()),
-  //     title: 'An event with no end date',
-  //     color: colors.yellow,
-  //     actions: this.actions
-  //   },
-  //   {
-  //     id: 3,
-  //     start: subDays(endOfMonth(new Date()), 3),
-  //     end: addDays(endOfMonth(new Date()), 3),
-  //     title: 'A long event that spans 2 months',
-  //     color: colors.blue,
-  //     allDay: true
-  //   },
-  //   {
-  //     id: 4,
-  //     start: addHours(startOfDay(new Date()), 2),
-  //     end: addHours(new Date(), 2),
-  //     title: 'A draggable and resizable event',
-  //     color: colors.yellow,
-  //     actions: this.actions,
-  //     resizable: {
-  //       beforeStart: true,
-  //       afterEnd: true
-  //     },
-  //     draggable: true
-  //   }
-  // ];
-
-  initializeEvent(event: CalendarEvent): void {
-    event = {
-      title: null,
-      start: null,
-      end: null
-    };
-  }
-
   activeDayIsOpen: boolean = true;
 
   constructor(private modal: NgbModal,
-    private eventTaskService: EventTaskServiceService) { 
+    private eventTaskService: EventTaskServiceService) {
 
     this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser')));
   }
@@ -194,23 +143,52 @@ export class PlannerViewComponent {
   // }
 
   eventAdded(newEventData: CalendarEvent): void {
-    this.events = [
-      ...this.events,
-      newEventData
-    ]
+    var sendEventTask = new EventTaskInput(
+      newEventData.id as number,
+      newEventData.start,
+      newEventData.end,
+      newEventData.title,
+      newEventData.color.primary,
+      newEventData.resizable.beforeStart,
+      newEventData.draggable,
+      this.currentUserSubject.value.id,
+      this.currentUserSubject.value
+    );
+    this.eventTaskService.addEventTask(sendEventTask).subscribe(result => {
+      result.actions = this.actions;
+      this.events = [
+        ...this.events,
+        result
+      ]
+    });
+    
     this.closeModal();
   }
 
   eventEdited(newEventData: CalendarEvent): void {
+    var sendEventTask = new EventTaskInput(
+      newEventData.id as number,
+      newEventData.start,
+      newEventData.end,
+      newEventData.title,
+      newEventData.color.primary,
+      newEventData.resizable.beforeStart,
+      newEventData.draggable,
+      this.currentUserSubject.value.id,
+      this.currentUserSubject.value
+    )
+    var editedEvent = this.eventTaskService.editEventTask(sendEventTask).subscribe();
+
     let eventFound = this.events.find(e => e.id === newEventData.id);
     let index = this.events.indexOf(eventFound);
     this.events[index] = newEventData;
-    // console.log("edited", newEventData);
+
     this.closeModal();
   }
 
-  eventDeleted(newEventData : CalendarEvent): void {
+  eventDeleted(newEventData: CalendarEvent): void {
     this.events = this.events.filter(event => event !== newEventData);
+    this.eventTaskService.deleteEventTasks(newEventData.id as number).subscribe();
     this.closeModal();
   }
 
@@ -222,7 +200,6 @@ export class PlannerViewComponent {
     this.activeDayIsOpen = false;
   }
 
-  //
   newEvent(day: Date): void {
     this.inputEvent = {
       title: null,
@@ -245,7 +222,7 @@ export class PlannerViewComponent {
     this.modal.open(this.eventContent);
   }
 
-  deleteEvent(eventToDelete: CalendarEvent) {    
+  deleteEvent(eventToDelete: CalendarEvent) {
     this.inputEvent = {
       title: null,
       start: null,

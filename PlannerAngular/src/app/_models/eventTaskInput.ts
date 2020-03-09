@@ -1,6 +1,7 @@
 import { User } from './user';
+import { CalendarEvent } from 'angular-calendar';
 
-export class eventTaskInput {
+export class EventTaskInput {
     id?: number;
     startDt: Date;
     endDt?: Date;
@@ -14,15 +15,24 @@ export class eventTaskInput {
     /**
      *Constructor
      */
-    constructor() {
-        this.id = null;
-        this.startDt = new Date();
-        this.endDt = new Date();
-        this.title = null;                ;
-        this.colour = null;
-        this.resizable = null;
-        this.draggable = null;
-        this.userId = null;
-        this.user = new User;
+    constructor(id: number,
+        startDt: Date,
+        endDt: Date,
+        title: string,
+        colour: string,
+        resizable: boolean,
+        draggable: boolean,
+        userId: number,
+        user: User) 
+        {
+        this.id = id;
+        this.startDt = startDt;
+        this.endDt = endDt;
+        this.title = title;
+        this.colour = colour;
+        this.resizable = resizable;
+        this.draggable = draggable;
+        this.userId = userId;
+        this.user = user;
     }
 }
