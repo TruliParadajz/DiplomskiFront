@@ -5,6 +5,7 @@ import { environment } from '@environments/environment';
 import { Observable, throwError, of, Subscription } from 'rxjs';
 import { EventTaskInput, eventTaskOutput } from '@app/_models';
 import { map } from 'rxjs/operators';
+import { parseISO } from 'date-fns';
 
 @Injectable({
   providedIn: 'root'
@@ -12,10 +13,8 @@ import { map } from 'rxjs/operators';
 export class EventTaskServiceService {
   constructor(private http: HttpClient) { }
 
-  getEventTasks(userId: number): Observable<any[]> {
-
-    var eventTasksList: EventTaskInput[];
-    var eventTask: CalendarEvent = {
+  initializeEventTask(eventTaskInput: CalendarEvent) {
+    var eventTaskOutput: CalendarEvent = {
       start: new Date,
       title: "",
       actions: null,
@@ -34,23 +33,30 @@ export class EventTaskServiceService {
         beforeStart: null
       }
     };
+    return eventTaskOutput;
+  }
 
-    return this.http.get<any[]>(`${environment.apiUrl}/eventTasks/${userId}`)
+  getEventTasks(userId: number): Observable<any[]> {
+
+    var eventTasksList: EventTaskInput[];
+    var eventTask: CalendarEvent ;
+
+    return this.http.get<EventTaskInput[]>(`${environment.apiUrl}/eventTasks/${userId}`)
       .pipe(
         map(
           (response: EventTaskInput[]) => {
+            var eventTasks: CalendarEvent[] = [];
             eventTasksList = response;
 
             if (eventTasksList.length <= 0) {
               return null;
             }
-
-            var eventTasks: CalendarEvent[] = [];
             eventTasksList.forEach(element => {
+              eventTask = this.initializeEventTask(eventTask);
               eventTask.id = element.id,
                 eventTask.title = element.title,
-                eventTask.start = new Date(element.startDt),
-                eventTask.end = new Date(element.endDt),
+                eventTask.start = parseISO(element.startDt.toString() + "Z"),
+                eventTask.end = parseISO(element.endDt.toString() + "Z"),
                 eventTask.color.primary = element.colour,
                 eventTask.draggable = element.draggable,
                 eventTask.resizable.afterEnd = element.resizable,
@@ -69,15 +75,15 @@ export class EventTaskServiceService {
   deleteEventTasks(taskId: number): Observable<CalendarEvent> {
     var eventTask = new EventTaskInput(null, null, null, null, null, null, null, null, null);
 
-    return this.http.delete<any>(`${environment.apiUrl}/eventTasks/${taskId}`)
+    return this.http.delete<EventTaskInput>(`${environment.apiUrl}/eventTasks/${taskId}`)
       .pipe(
         map((response: EventTaskInput) => {
           eventTask = response;
 
           var eventTaskReturn: CalendarEvent = {
             title: response.title,
-            start: response.startDt,
-            end: new Date(response.endDt),
+            start: parseISO(response.startDt.toString() + "Z"),
+            end: parseISO(response.endDt.toString() + "Z"),
             resizable: {
               afterEnd: response.resizable,
               beforeStart: response.resizable
@@ -100,15 +106,15 @@ export class EventTaskServiceService {
   editEventTask(editEventTask: EventTaskInput): Observable<CalendarEvent> {
     var eventTask = new EventTaskInput(null, null, null, null, null, null, null, null, null);
 
-    return this.http.put<any>(`${environment.apiUrl}/eventTasks`, editEventTask)
+    return this.http.put<EventTaskInput>(`${environment.apiUrl}/eventTasks`, editEventTask)
       .pipe(
         map((response: EventTaskInput) => {
           eventTask = response;
 
           var eventTaskReturn: CalendarEvent = {
             title: response.title,
-            start: response.startDt,
-            end: new Date(response.endDt),
+            start: parseISO(response.startDt.toString() + "Z"),
+            end: parseISO(response.endDt.toString() + "Z"),
             resizable: {
               afterEnd: response.resizable,
               beforeStart: response.resizable
@@ -130,7 +136,7 @@ export class EventTaskServiceService {
   addEventTask(newEventTask: EventTaskInput): Observable<CalendarEvent> {
     var eventTask = new EventTaskInput(null, null, null, null, null, null, null, null, null);
 
-    return this.http.post<any>(`${environment.apiUrl}/eventTasks`, newEventTask)
+    return this.http.post<EventTaskInput>(`${environment.apiUrl}/eventTasks`, newEventTask)
       .pipe(
         map(
           (response: EventTaskInput) => {
@@ -139,8 +145,8 @@ export class EventTaskServiceService {
 
             var eventTaskReturn: CalendarEvent = {
               title: response.title,
-              start: response.startDt,
-              end: new Date(response.endDt),
+              start: parseISO(response.startDt.toString() + "Z"),
+              end: parseISO(response.endDt.toString() + "Z"),
               resizable: {
                 afterEnd: response.resizable,
                 beforeStart: response.resizable
@@ -158,5 +164,4 @@ export class EventTaskServiceService {
         )
       )
   }
-
 }

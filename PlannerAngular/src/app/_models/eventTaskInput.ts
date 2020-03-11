@@ -23,8 +23,7 @@ export class EventTaskInput {
         resizable: boolean,
         draggable: boolean,
         userId: number,
-        user: User) 
-        {
+        user: User) {
         this.id = id;
         this.startDt = startDt;
         this.endDt = endDt;

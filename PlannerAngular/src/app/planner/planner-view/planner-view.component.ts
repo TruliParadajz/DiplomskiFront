@@ -102,7 +102,7 @@ export class PlannerViewComponent {
         element.actions = this.actions
       });
     });
-    
+
   }
   activeDayIsOpen: boolean = true;
 
@@ -125,23 +125,10 @@ export class PlannerViewComponent {
   }
 
   eventTimesChanged({ event, newStart, newEnd }: CalendarEventTimesChangedEvent): void {
-    this.events = this.events.map(iEvent => {
-      if (iEvent === event) {
-        return {
-          ...event,
-          start: newStart,
-          end: newEnd
-        };
-      }
-      return iEvent;
-    });
+    event.start = newStart;
+    event.end = newEnd;
+    this.editEvent(event);
   }
-
-  // handleEvent(action: string, event: CalendarEvent): void {
-  //   this.modalData = { event, action };
-  //   this.modal.open(this.modalContent, { size: 'lg' });
-  // }
-
   eventAdded(newEventData: CalendarEvent): void {
     var sendEventTask = new EventTaskInput(
       newEventData.id as number,
@@ -159,10 +146,14 @@ export class PlannerViewComponent {
       this.events = [
         ...this.events,
         result
-      ]
+      ];
+      console.log("newEventData: ", newEventData);
+      console.log("result: ", result);
+      this.refresh.next();
     });
-    
+
     this.closeModal();
+    this.refresh.next();
   }
 
   eventEdited(newEventData: CalendarEvent): void {
@@ -176,20 +167,27 @@ export class PlannerViewComponent {
       newEventData.draggable,
       this.currentUserSubject.value.id,
       this.currentUserSubject.value
-    )
-    var editedEvent = this.eventTaskService.editEventTask(sendEventTask).subscribe();
+    );
+    this.eventTaskService.editEventTask(sendEventTask).subscribe(
+      result => {
+        result.actions = this.actions;
+        let index = this.events.indexOf(this.events.find(e => e.id === result.id));
+        this.events[index] = result;
 
-    let eventFound = this.events.find(e => e.id === newEventData.id);
-    let index = this.events.indexOf(eventFound);
-    this.events[index] = newEventData;
-
-    this.closeModal();
+        this.closeModal();
+        this.refresh.next();
+      }
+    );
+    this.refresh.next();
   }
 
   eventDeleted(newEventData: CalendarEvent): void {
-    this.events = this.events.filter(event => event !== newEventData);
-    this.eventTaskService.deleteEventTasks(newEventData.id as number).subscribe();
-    this.closeModal();
+
+    this.eventTaskService.deleteEventTasks(newEventData.id as number).subscribe(
+      result => {
+        this.events = this.events.filter(event => event !== newEventData);
+        this.closeModal();
+      });
   }
 
   setView(view: CalendarView) {
