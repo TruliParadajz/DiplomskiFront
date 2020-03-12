@@ -6,53 +6,74 @@
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
-<form>
+<form [formGroup]="eventTaskForm" (ngSubmit)="onSubmit()">
     <div class="modal-body" *ngIf="!isDelete">
-        <div>
-            Event:
-            <input class="form-control" type="text" [(ngModel)]="eventTitle" name="eventTitle" />
+        <div class="formGroup">
+            <label for="eventTitle">Event:</label>
+            <input class="form-control" type="text" formControlName="eventTitle" placeholder="Enter a title"
+                [ngClass]="{ 'is-invalid': submitted && f.eventTitle.errors }" />
+            <div *ngIf="submitted && f.eventTitle.errors" class="invalid-feedback">
+                <div *ngIf="f.eventTitle.errors.required">Title is required</div>
+                <div *ngIf="f.eventTitle.errors.minlength">Title must be between 4 and 20 characters</div>
+            </div>
         </div>
-        <div>
+        <div class="formGroup">
             <br>
             <table class="table table-bordered" id="dateTable">
                 <thead>
                     <tr>
-                        <th>Date From</th>
-                        <th>Date To</th>
+                        <th><label for="eventTitle">Date From:</label></th>
+                        <th><label for="eventTitle">Date To:</label></th>
                     </tr>
                 </thead>
                 <tbody>
                     <td>
-                        <input class="form-control" type="text" mwlFlatpickr [(ngModel)]="dateFrom" name="dateFrom"
+                        <input class="form-control" type="text" mwlFlatpickr formControlName="dateFrom"
                             [altInput]="true" [convertModelValue]="true" [enableTime]="true" [time24hr]="true"
                             dateFormat="Y-m-dTH:i" altFormat="F j, Y H:i" placeholder="Not set" />
                     </td>
                     <td>
-                        <input class="form-control" type="text" mwlFlatpickr [(ngModel)]="dateTo" name="dateTo"
-                            [altInput]="true" [convertModelValue]="true" [enableTime]="true" [time24hr]="true"
-                            dateFormat="Y-m-dTH:i" altFormat="F j, Y H:i" placeholder="Not set" />
+                        <input class="form-control" type="text" mwlFlatpickr formControlName="dateTo" [altInput]="true"
+                            [convertModelValue]="true" [enableTime]="true" [time24hr]="true" dateFormat="Y-m-dTH:i"
+                            altFormat="F j, Y H:i" placeholder="Not set"
+                            [ngClass]="{ 'is-invalid': submitted && errors.dates }" />
                     </td>
                 </tbody>
             </table>
+            <div *ngIf="submitted && errors.dates">
+                {{ eventTaskForm.errors?.dates | json }}
+            </div>
         </div>
     </div>
-    <div class="modal-body" *ngIf="isDelete">
-        <div>
-            Are you sure you want to delete this event?
+    <div class="modal-footer" *ngIf="!isDelete">
+        <div class="formGroup">
+            <button *ngIf="!inputEvent.id" type="submit" class="btn btn-primary" (click)="createTrue()"
+                [disabled]="loading">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                CREATE
+            </button>
+        </div>
+        <div class="formGroup">
+            <button *ngIf="inputEvent.id" type="submit" class="btn btn-primary" (click)="editTrue()"
+                [disabled]="loading">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                EDIT
+            </button>
         </div>
     </div>
 </form>
-<div class="modal-footer" *ngIf="!isDelete">
-    <button *ngIf="!inputEvent.id" type="button" class="btn btn-outline-secondary"
-        (click)="addEvent(eventTitle, dateFrom, dateTo)">
-        CREATE
-    </button>
-    <button *ngIf="inputEvent.id" type="button" class="btn btn-outline-secondary"
-        (click)="editEvent(eventTitle, dateFrom, dateTo)">
-        EDIT
-    </button>
+<div class="modal-body" *ngIf="isDelete">
+    <div>
+        Are you sure you want to delete this event?
+    </div>
 </div>
 <div class="modal-footer" *ngIf="isDelete">
     <button type="button" class="btn btn-outline-secondary" (click)="deleteEvent()">YES</button>
     <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">NO</button>
 </div>
+
+<!-- (click)="addEvent(eventTitle, dateFrom, dateTo)">
+            CREATE
+
+            (click)="editEvent(eventTitle, dateFrom, dateTo)">
+            EDIT -->

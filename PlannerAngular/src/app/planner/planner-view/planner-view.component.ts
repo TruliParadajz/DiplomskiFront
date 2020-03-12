@@ -121,7 +121,6 @@ export class PlannerViewComponent {
       }
       this.viewDate = date;
     }
-    console.log(date);
   }
 
   eventTimesChanged({ event, newStart, newEnd }: CalendarEventTimesChangedEvent): void {
@@ -147,8 +146,6 @@ export class PlannerViewComponent {
         ...this.events,
         result
       ];
-      console.log("newEventData: ", newEventData);
-      console.log("result: ", result);
       this.refresh.next();
     });
 

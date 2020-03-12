@@ -36,6 +36,25 @@ export class EventTaskServiceService {
     return eventTaskOutput;
   }
 
+  createReturnEventTask(response: EventTaskInput): CalendarEvent {
+    var returnEventTask: CalendarEvent;
+    returnEventTask = this.initializeEventTask(returnEventTask);
+
+    returnEventTask.id = response.id;
+    returnEventTask.title = response.title;
+    returnEventTask.start = parseISO(response.startDt.toString() + "Z");
+    if(response.endDt != null) {
+      returnEventTask.end = parseISO(response.endDt.toString() + "Z");
+    }
+    returnEventTask.color.primary = response.colour;
+    returnEventTask.color.secondary = response.colour;
+    returnEventTask.resizable.beforeStart = response.resizable;
+    returnEventTask.resizable.afterEnd = response.resizable;
+    returnEventTask.draggable = response.draggable;
+
+    return returnEventTask;
+  }
+
   getEventTasks(userId: number): Observable<any[]> {
 
     var eventTasksList: EventTaskInput[];
@@ -52,15 +71,7 @@ export class EventTaskServiceService {
               return null;
             }
             eventTasksList.forEach(element => {
-              eventTask = this.initializeEventTask(eventTask);
-              eventTask.id = element.id,
-                eventTask.title = element.title,
-                eventTask.start = parseISO(element.startDt.toString() + "Z"),
-                eventTask.end = parseISO(element.endDt.toString() + "Z"),
-                eventTask.color.primary = element.colour,
-                eventTask.draggable = element.draggable,
-                eventTask.resizable.afterEnd = element.resizable,
-                eventTask.resizable.beforeStart = element.resizable
+              eventTask = this.createReturnEventTask(element);
 
               eventTasks.push({ ...eventTask });
             });
@@ -80,21 +91,7 @@ export class EventTaskServiceService {
         map((response: EventTaskInput) => {
           eventTask = response;
 
-          var eventTaskReturn: CalendarEvent = {
-            title: response.title,
-            start: parseISO(response.startDt.toString() + "Z"),
-            end: parseISO(response.endDt.toString() + "Z"),
-            resizable: {
-              afterEnd: response.resizable,
-              beforeStart: response.resizable
-            },
-            id: response.id,
-            draggable: response.draggable,
-            color: {
-              primary: response.colour,
-              secondary: response.colour
-            }
-          }
+          var eventTaskReturn = this.createReturnEventTask(response);
 
           return eventTaskReturn;
         }
@@ -111,21 +108,7 @@ export class EventTaskServiceService {
         map((response: EventTaskInput) => {
           eventTask = response;
 
-          var eventTaskReturn: CalendarEvent = {
-            title: response.title,
-            start: parseISO(response.startDt.toString() + "Z"),
-            end: parseISO(response.endDt.toString() + "Z"),
-            resizable: {
-              afterEnd: response.resizable,
-              beforeStart: response.resizable
-            },
-            id: response.id,
-            draggable: response.draggable,
-            color: {
-              primary: response.colour,
-              secondary: response.colour
-            }
-          }
+          var eventTaskReturn = this.createReturnEventTask(response);
 
           return eventTaskReturn;
         }
@@ -143,22 +126,7 @@ export class EventTaskServiceService {
             console.log(response);
             eventTask = response;
 
-            var eventTaskReturn: CalendarEvent = {
-              title: response.title,
-              start: parseISO(response.startDt.toString() + "Z"),
-              end: parseISO(response.endDt.toString() + "Z"),
-              resizable: {
-                afterEnd: response.resizable,
-                beforeStart: response.resizable
-              },
-              id: response.id,
-              draggable: response.draggable,
-              color: {
-                primary: response.colour,
-                secondary: response.colour
-              }
-            }
-
+            var eventTaskReturn = this.createReturnEventTask(response);
             return eventTaskReturn;
           }
         )

@@ -4,6 +4,7 @@ import { CalendarModule } from 'angular-calendar';
 import { PlannerViewComponent } from './planner-view/planner-view.component';
 import { FormsModule } from '@angular/forms';
 import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import 'flatpickr/dist/flatpickr.css'; // you may need to adjust the css import depending on your build tool
 import { FlatpickrModule } from 'angularx-flatpickr';
@@ -13,6 +14,7 @@ import { EventContentComponent } from './event-content/event-content.component';
 @NgModule({
   declarations: [PlannerViewComponent, EventContentComponent],
   imports: [
+    ReactiveFormsModule,
     CommonModule,
     CalendarModule,
     FormsModule,

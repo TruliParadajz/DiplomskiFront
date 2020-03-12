@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewChild, TemplateRef, Output, EventEmitter, Input, destroyPlatform } from '@angular/core';
+import { Component, OnInit, TemplateRef, Output, EventEmitter, Input, Type } from '@angular/core';
 import { CalendarEvent } from 'angular-calendar';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { CalendarEventActionsComponent } from 'angular-calendar/modules/common/calendar-event-actions.component';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 const colors: any = {
   red: {
@@ -32,29 +32,55 @@ export class EventContentComponent implements OnInit {
 
   @Input() inputEvent: CalendarEvent;
   @Input() isDelete: boolean;
+
+  eventTaskForm: FormGroup;
+
   viewDate: Date = new Date();
   eventTemplate: CalendarEvent;
-
-  // modalData: {
-  //   action: string;
-  //   event: CalendarEvent;
-  // };
 
   dateFrom: Date;
   dateTo: Date;
   eventTitle: string;
-  constructor() { }
+  submitted: boolean;
+  createFlag: boolean = false;
+  editFlag: boolean = false;
+  loading: boolean = false;
+  dateError: boolean = false;
+
+  constructor(private formBuilder: FormBuilder, ) { }
+
+  dateLessThan(from: string, to: string) {
+    return (group: FormGroup): { [key: string]: any } => {
+      let f = group.controls[from];
+      let t = group.controls[to];
+      if (t != null && f.value > t.value) {
+        return {
+          dates: "Date from should be less than Date to"
+        };
+      }
+      return {};
+    }
+  }
 
   ngOnInit(): void {
     var today = new Date();
     this.eventTitle = this.inputEvent.title;
     this.dateFrom = this.inputEvent.start;
     this.dateTo = this.inputEvent.end;
-    console.log(this.inputEvent);
     if (this.dateFrom.getDate() === today.getDate()) {
       this.dateFrom.setTime(today.getTime());
     }
+
+    this.eventTaskForm = this.formBuilder.group({
+      eventTitle: [this.eventTitle, [Validators.required, Validators.minLength(4), Validators.maxLength(20)]],
+      dateFrom: [this.dateFrom, Validators.required],
+      dateTo: [this.dateTo]
+    },
+      { validator: this.dateLessThan('dateFrom', 'dateTo') });
   }
+  get f() { return this.eventTaskForm.controls; }
+
+  get errors() { return this.eventTaskForm.errors; }
 
   addEvent(eventTitle: string, dateFrom: Date, dateTo: Date): void {
     this.eventTemplate =
@@ -87,4 +113,30 @@ export class EventContentComponent implements OnInit {
   closeModal(): void {
     this.modalClosed.emit(1);
   }
+
+  createTrue(): void {
+    this.createFlag = true;
+  }
+  editTrue(): void {
+    this.editFlag = true;
+  }
+
+  onSubmit(): void {
+    this.submitted = true;
+
+    // stop here if form is invalid
+    if (this.eventTaskForm.invalid) {
+      console.log(this.errors);
+      return;
+    }
+
+    this.loading = true;
+    if (this.createFlag) {
+      this.addEvent(this.eventTaskForm.value.eventTitle, this.eventTaskForm.value.dateFrom, this.eventTaskForm.value.dateTo);
+    }
+    if (this.editFlag) {
+      this.editEvent(this.eventTaskForm.value.eventTitle, this.eventTaskForm.value.dateFrom, this.eventTaskForm.value.dateTo);
+    }
+  }
+
 }
