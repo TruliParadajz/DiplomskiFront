@@ -41,7 +41,7 @@ export class EventContentComponent implements OnInit {
   dateFrom: Date;
   dateTo: Date;
   eventTitle: string;
-  submitted: boolean;
+  submitted: boolean = false;
   createFlag: boolean = false;
   editFlag: boolean = false;
   loading: boolean = false;
@@ -126,7 +126,6 @@ export class EventContentComponent implements OnInit {
 
     // stop here if form is invalid
     if (this.eventTaskForm.invalid) {
-      console.log(this.errors);
       return;
     }
 

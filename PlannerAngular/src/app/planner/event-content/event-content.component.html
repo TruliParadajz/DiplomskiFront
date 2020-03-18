@@ -12,7 +12,7 @@
             <label for="eventTitle">Event:</label>
             <input class="form-control" type="text" formControlName="eventTitle" placeholder="Enter a title"
                 [ngClass]="{ 'is-invalid': submitted && f.eventTitle.errors }" />
-            <div *ngIf="submitted && f.eventTitle.errors" class="invalid-feedback">
+            <div *ngIf="submitted && f.eventTitle.errors" class="errorWrapper alert alert-danger">
                 <div *ngIf="f.eventTitle.errors.required">Title is required</div>
                 <div *ngIf="f.eventTitle.errors.minlength">Title must be between 4 and 20 characters</div>
             </div>
@@ -28,20 +28,25 @@
                 </thead>
                 <tbody>
                     <td>
-                        <input class="form-control" type="text" mwlFlatpickr formControlName="dateFrom"
+                        <div class="dateDiv">
+                        <input type="dateInput text" mwlFlatpickr formControlName="dateFrom"
                             [altInput]="true" [convertModelValue]="true" [enableTime]="true" [time24hr]="true"
                             dateFormat="Y-m-dTH:i" altFormat="F j, Y H:i" placeholder="Not set" />
+                        </div>
                     </td>
                     <td>
-                        <input class="form-control" type="text" mwlFlatpickr formControlName="dateTo" [altInput]="true"
+                        <div class="dateDiv form-control" [ngClass]="{ 'is-invalid': submitted && errors }">
+                        <input class="dateInput" type="text" mwlFlatpickr formControlName="dateTo" [altInput]="true"
                             [convertModelValue]="true" [enableTime]="true" [time24hr]="true" dateFormat="Y-m-dTH:i"
-                            altFormat="F j, Y H:i" placeholder="Not set"
-                            [ngClass]="{ 'is-invalid': submitted && errors.dates }" />
+                            altFormat="F j, Y H:i" placeholder="Not set" style="background-color: brown;" />
+                        </div>
                     </td>
                 </tbody>
             </table>
-            <div *ngIf="submitted && errors.dates">
-                {{ eventTaskForm.errors?.dates | json }}
+            <div *ngIf="submitted && errors" class="errorWrapper alert alert-danger">
+                <div>
+                    Date to should be of greater value than date from
+                </div>
             </div>
         </div>
     </div>
