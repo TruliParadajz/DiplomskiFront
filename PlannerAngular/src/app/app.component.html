@@ -1,8 +1,18 @@
 ﻿<!-- nav -->
-<nav class="navbar navbar-expand navbar-dark bg-dark" *ngIf="currentUser">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark" *ngIf="currentUser">
     <div class="navbar-nav">
         <a class="nav-item nav-link" routerLink="/">Home</a>
-        <a class="nav-item nav-link" (click)="logout()">Logout</a>
+        <a class="nav-item nav-link" routerLink="/">Settings</a>
+    </div>
+    <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-item nav-link navbar-right" (click)="logout()">Logout</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-item nav-link navbar-right" routerLink="/">Help</a>
+            </li>
+        </ul>
     </div>
 </nav>
 

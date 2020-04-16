@@ -6,8 +6,11 @@ import { appRoutingModule } from '../app.routing';
 
 import { AuthenticationService, AlertService } from '@app/_services';
 import { ContextMenuComponent } from 'ngx-contextmenu';
+import { LogotitleComponent } from '../logotitle/logotitle.component'
 
-@Component({ templateUrl: 'login.component.html' })
+@Component({
+    templateUrl: 'login.component.html'
+})
 export class LoginComponent implements OnInit {
     loginForm: FormGroup;
     loading = false;

@@ -16,7 +16,9 @@ import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { PlannerModule } from './planner/planner.module';
 
 import { FlatpickrModule } from 'angularx-flatpickr';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';;
+import { LogotitleComponent } from './logotitle/logotitle.component';
+import { UsersettingsComponent } from './usersettings/usersettings.component'
 
 
 @NgModule({
@@ -28,7 +30,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
         FlatpickrModule.forRoot(),
         CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
         PlannerModule,
-        BrowserAnimationsModule        
+        BrowserAnimationsModule
     ],
     declarations: [
         AppComponent,
@@ -36,6 +38,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
         LoginComponent,
         RegisterComponent,
         AlertComponent,
+        LogotitleComponent,
+        UsersettingsComponent
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

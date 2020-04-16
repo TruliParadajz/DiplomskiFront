@@ -2,10 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { first } from 'rxjs/operators';
+import { LogotitleComponent } from '../logotitle/logotitle.component'
 
 import { AuthenticationService, UserService, AlertService } from '@app/_services';
 
-@Component({ templateUrl: './register.component.html' })
+@Component({
+  templateUrl: './register.component.html'
+})
 export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   loading = false;

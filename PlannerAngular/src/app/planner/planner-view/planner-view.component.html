@@ -6,7 +6,7 @@
         Previous
       </div>
       <div class="btn btn-outline-secondary" mwlCalendarToday [(viewDate)]="viewDate">
-        Today
+        Current
       </div>
       <div class="btn btn-primary" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate"
         (viewDateChange)="closeOpenMonthViewDay()">
@@ -32,7 +32,7 @@
   </div>
 </div>
 <br />
-<div [ngSwitch]="view" class="mat-app-background basic-container" style="position: relative">
+<div [ngSwitch]="view" class="mat-app-background basic-container calendarContainer" style="position: relative">
   <mwl-calendar-month-view *ngSwitchCase="CalendarView.Month" [viewDate]="viewDate" [events]="events"
     [refresh]="refresh" [activeDayIsOpen]="activeDayIsOpen" (dayClicked)="dayClicked($event.day)"
     (eventClicked)="editEvent($event.event)" (eventTimesChanged)="eventTimesChanged($event)"
