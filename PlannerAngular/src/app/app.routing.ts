@@ -8,7 +8,11 @@ import { RegisterComponent } from './register/register.component';
 const routes: Routes = [
     { path: '', component: HomeComponent, canActivate: [AuthGuard] },
     { path: 'login', component: LoginComponent },
-    { path: 'register', component: RegisterComponent},
+    { path: 'register', component: RegisterComponent },
+    {
+        path: 'settings',
+        loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule)
+    },
 
     // otherwise redirect to home
     { path: '**', redirectTo: '' }

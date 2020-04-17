@@ -7,7 +7,8 @@ import { LogotitleComponent } from '../logotitle/logotitle.component'
 import { AuthenticationService, UserService, AlertService } from '@app/_services';
 
 @Component({
-  templateUrl: './register.component.html'
+  templateUrl: './register.component.html',
+  styleUrls: ['register.component.less']
 })
 export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
@@ -30,7 +31,7 @@ export class RegisterComponent implements OnInit {
     this.registerForm = this.formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      username: ['', Validators.required],
+      username: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
