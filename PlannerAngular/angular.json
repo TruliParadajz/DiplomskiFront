@@ -30,7 +30,8 @@
             ],
             "styles": [
               "node_modules/angular-calendar/css/angular-calendar.css",
-              "src/styles.less"
+              "src/styles.less",
+              "node_modules/bootstrap/dist/css/bootstrap.min.css"
             ],
             "scripts": []
           },
@@ -97,7 +98,9 @@
               "node_modules/angular-calendar/css/angular-calendar.css",
               "src/styles.less"
             ],
-            "scripts": []
+            "scripts": [
+              "../node_modules/jquery/dist/jquery.min.js"
+            ]
           }
         },
         "lint": {

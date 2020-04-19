@@ -1,18 +1,18 @@
 export class userNotificationModel { 
-    Id: number;
-    UserId: number;
-    EmailNotification: boolean;
-    AppNotification: boolean;
-    Hours: number;
+    id: number;
+    userId: number;
+    emailNotification: boolean;
+    appNotification: boolean;
+    hours: number;
 
     /**
-     *Constructs empty userNotificationModel
+     *
      */
-    constructor() {
-        this.Id = 0;
-        this.UserId = 0;
-        this.EmailNotification = false;
-        this.AppNotification = false;
-        this.Hours = 24;
+    constructor(id: number, userId: number, emailNotification: boolean, appNotification: boolean, hours: number) {
+        this.id = id;
+        this.userId = userId;
+        this.emailNotification = emailNotification;
+        this.appNotification = appNotification;
+        this.hours = hours;
     }
 }

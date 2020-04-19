@@ -5,6 +5,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { settingsRoutingModule } from './settings.routing';
 import { EventtasksettingsComponent } from './eventtasksettings/eventtasksettings.component';
 import { SettingsComponent } from './settings.component';
+import { MatSliderModule } from '@angular/material/slider';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 
 
@@ -17,10 +19,13 @@ import { SettingsComponent } from './settings.component';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    settingsRoutingModule
+    settingsRoutingModule,
+    MatSliderModule,
+    MatSlideToggleModule, // here otherwise it's not possible to use the component mat-slide-toggle defined in this module
+    // BrowserAnimationsModule
   ],
   exports: [
-    UsersettingsComponent    
+    UsersettingsComponent
   ]
 })
 export class SettingsModule { }

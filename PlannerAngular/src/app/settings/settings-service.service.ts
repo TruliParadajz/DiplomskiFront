@@ -14,21 +14,24 @@ import { parseISO } from 'date-fns';
 export class SettingsServiceService {
     constructor(private http: HttpClient) {
     }
-
-    getNotificationSettings(userId: number) {
-        var userNotifications: userNotificationModel;
-
+    getNotificationSettings(userId: number): Observable<userNotificationModel> {
         return this.http.get<userNotificationModel>(`${environment.apiUrl}/UserNotifications/userId/${userId}`)
             .pipe(
                 map(
-                    (response: userNotificationModel) => {
-                        userNotifications = response;
-                        return userNotifications;
+                    (res: userNotificationModel) => {
+                        return res;
                     }
                 )
             );
     }
-    updateNotificationSettings(inputModel: userNotificationModel) {
-        // this.http.put
+    updateNotificationSettings(inputModel: userNotificationModel): Observable<userNotificationModel> {
+        return this.http.put<userNotificationModel>(`${environment.apiUrl}/UserNotifications`, inputModel)
+            .pipe(
+                map(
+                    (res: userNotificationModel) => {
+                        return res;
+                    }
+                )
+            )
     }
 }
