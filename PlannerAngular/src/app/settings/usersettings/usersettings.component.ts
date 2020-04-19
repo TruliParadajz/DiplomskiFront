@@ -22,7 +22,7 @@ export class UsersettingsComponent implements OnInit {
     private router: Router,
     private formBuilder: FormBuilder,
     private alertService: AlertService,
-    private userService: UserService,) {
+    private userService: UserService) {
     this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser')));    
    }
 
