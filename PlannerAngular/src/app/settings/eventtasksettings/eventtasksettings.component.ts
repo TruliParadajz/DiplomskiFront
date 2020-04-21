@@ -5,6 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { User, userNotificationModel } from '@app/_models';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { first } from 'rxjs/operators';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'settings-eventtasksettings',
@@ -21,6 +22,7 @@ export class EventtasksettingsComponent implements OnInit {
   hoursValue: number;
   isEmail: boolean;
   isApp: boolean;
+  enableUpdate: boolean = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -50,7 +52,6 @@ export class EventtasksettingsComponent implements OnInit {
           this.isApp = res.appNotification;
           this.isEmail = res.emailNotification;
 
-          console.log(this.hoursValue);
 
           var result: userNotificationModel = res;
           this.updateForm = this.formBuilder.group({
@@ -58,6 +59,8 @@ export class EventtasksettingsComponent implements OnInit {
             appNotification: [res.appNotification,],
             hours: [res.hours,]
           });
+          console.log(this.f.emailNotification.dirty);
+          console.log(this.f.emailNotification.pristine);
         }
       );
   }
@@ -100,31 +103,39 @@ export class EventtasksettingsComponent implements OnInit {
       )
   }
 
-  updateSetting(event) {
+  hoursChanged(event) {
+    this.enableUpdate = true;
     this.hoursValue = event.value;
     this.updateForm = this.formBuilder.group({
       emailNotification: [this.f.emailNotification.value,],
       appNotification: [this.f.appNotification.value,],
       hours: [this.hoursValue,]
     });
+    console.log(this.f.emailNotification.dirty);
+    console.log(this.f.emailNotification.pristine);
   }
 
   appChanged(event) {
+    this.enableUpdate = true;
     this.isApp = !this.isApp;
     this.updateForm = this.formBuilder.group({
       emailNotification: [this.f.emailNotification.value,],
       appNotification: [this.isApp,],
       hours: [this.hoursValue,]
     });
-    console.log(this.isApp);
+    console.log(this.f.emailNotification.dirty);
+    console.log(this.f.emailNotification.pristine);
   }
 
   emailChanged(event) {
-    this.isEmail = !this.isEmail
+    this.enableUpdate = true;
+    this.isEmail = !this.isEmail;
     this.updateForm = this.formBuilder.group({
       emailNotification: [this.isEmail,],
       appNotification: [this.f.appNotification.value,],
       hours: [this.hoursValue,]
     });
+    console.log(this.f.emailNotification.dirty);
+    console.log(this.f.emailNotification.pristine);
   }
 }

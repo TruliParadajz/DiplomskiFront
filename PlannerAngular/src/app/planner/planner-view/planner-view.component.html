@@ -1,31 +1,31 @@
 <div class="row text-center">
   <div class="col-md-4">
     <div class="btn-group">
-      <div class="btn btn-primary" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate"
+      <div class="btn btn-outline-secondary" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate"
         (viewDateChange)="closeOpenMonthViewDay()">
         Previous
       </div>
       <div class="btn btn-outline-secondary" mwlCalendarToday [(viewDate)]="viewDate">
         Current
       </div>
-      <div class="btn btn-primary" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate"
+      <div class="btn btn-outline-secondary" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate"
         (viewDateChange)="closeOpenMonthViewDay()">
         Next
       </div>
     </div>
   </div>
   <div class="col-md-4">
-    <h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</h3>
+    <h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en'}}</h3>
   </div>
   <div class="col-md-4">
     <div class="btn-group">
-      <div class="btn btn-primary" (click)="setView(CalendarView.Month)" [class.active]="view === CalendarView.Month">
+      <div class="btn btn-outline-secondary" (click)="setView(CalendarView.Month)" [class.active]="view === CalendarView.Month">
         Month
       </div>
-      <div class="btn btn-primary" (click)="setView(CalendarView.Week)" [class.active]="view === CalendarView.Week">
+      <div class="btn btn-outline-secondary" (click)="setView(CalendarView.Week)" [class.active]="view === CalendarView.Week">
         Week
       </div>
-      <div class="btn btn-primary" (click)="setView(CalendarView.Day)" [class.active]="view === CalendarView.Day">
+      <div class="btn btn-outline-secondary" (click)="setView(CalendarView.Day)" [class.active]="view === CalendarView.Day">
         Day
       </div>
     </div>
@@ -35,7 +35,7 @@
 <div [ngSwitch]="view" class="mat-app-background basic-container calendarContainer" style="position: relative">
   <mwl-calendar-month-view *ngSwitchCase="CalendarView.Month" [viewDate]="viewDate" [events]="events"
     [refresh]="refresh" [activeDayIsOpen]="activeDayIsOpen" (dayClicked)="dayClicked($event.day)"
-    (eventClicked)="editEvent($event.event)" (eventTimesChanged)="eventTimesChanged($event)"
+    (eventClicked)="editEvent($event.event)" (eventTimesChanged)="eventTimesChanged($event)" [weekStartsOn]="1"
     [cellTemplate]="customCellTemplate">
   </mwl-calendar-month-view>
   <mwl-calendar-week-view *ngSwitchCase="CalendarView.Week" [viewDate]="viewDate" [events]="events" [refresh]="refresh"
@@ -102,7 +102,7 @@
 <ng-template #customCellTemplate let-day="day" let-locale="locale">
   <div class="cal-cell-top" [contextMenu]="basicMenu" [contextMenuSubject]="day.date">
     <span class="cal-day-badge" *ngIf="day.badgeTotal > 0">{{ day.badgeTotal }}</span>
-    <span class="cal-day-number">{{ day.date | calendarDate:'monthViewDayNumber':locale }}</span>
+    <span class="cal-day-number">{{ day.date | calendarDate:('monthViewDayNumber'):locale }}</span>
   </div>
 </ng-template>
 

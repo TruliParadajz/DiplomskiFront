@@ -73,6 +73,8 @@ export class PlannerViewComponent {
   //Bool value for delete content
   isDelete: boolean;
 
+  weekStartsOn = "1";
+
   actions: CalendarEventAction[] = [
     {
       label: '<i class="fa fa-fw fa-pencil"></i>',

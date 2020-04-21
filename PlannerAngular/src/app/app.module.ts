@@ -20,7 +20,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';;
 import { LogotitleComponent } from './logotitle/logotitle.component';
 
 import { SettingsModule } from './settings/settings.module';
-import { MatSliderModule } from '@angular/material/slider';
 
 @NgModule({
     imports: [

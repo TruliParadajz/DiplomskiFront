@@ -22,7 +22,6 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     settingsRoutingModule,
     MatSliderModule,
     MatSlideToggleModule, // here otherwise it's not possible to use the component mat-slide-toggle defined in this module
-    // BrowserAnimationsModule
   ],
   exports: [
     UsersettingsComponent
