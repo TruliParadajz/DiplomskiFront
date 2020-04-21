@@ -1,0 +1,16 @@
+<div class="col-md-6 offset-md-3 mt-5">
+    <div class="card">
+        <div class="card-header cardHeaderClass">
+            <ul class="nav nav-tabs cardHeaderClass">
+                <li class="nav-item cardHeaderClass">
+                    <a id="user" class="nav-link active" data-toggle="tab" (click)="userTabClick();">User Settings</a>
+                </li>
+                <li class="nav nav-tabs cardHeaderClass">
+                    <a id="eventTask" class="nav-link" data-toggle="tab" (click)="eventTaskTabClick();">Event Task Settings</a>
+                </li>
+            </ul>
+        </div>
+        <settings-usersettings *ngIf="userTab"></settings-usersettings>
+        <settings-eventtasksettings *ngIf="eventTaskTab"></settings-eventtasksettings>
+    </div>
+</div>

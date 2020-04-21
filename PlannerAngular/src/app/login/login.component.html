@@ -1,10 +1,11 @@
-﻿<div class="col-md-6 offset-md-3 mt-5">
+﻿<app-logotitle></app-logotitle>
+<div class="col-md-6 offset-md-3 mt-5">    
     <div class="card">
-        <h4 class="card-header">.u</h4>
+        <h4 class="card-header">Login</h4>
         <div class="card-body">
             <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
                 <div class="form-group">
-                    <label for="username">Username</label>
+                    <label for="username">Email Address</label>
                     <input type="text" formControlName="username" class="form-control"
                         [ngClass]="{ 'is-invalid': submitted && f.username.errors }" />
                     <div *ngIf="submitted && f.username.errors" class="invalid-feedback">

@@ -2,10 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { first } from 'rxjs/operators';
+import { LogotitleComponent } from '../logotitle/logotitle.component'
 
 import { AuthenticationService, UserService, AlertService } from '@app/_services';
 
-@Component({ templateUrl: './register.component.html' })
+import { MustMatch } from '@app/_helpers/must-match.validator';
+
+@Component({
+  templateUrl: './register.component.html',
+  styleUrls: ['register.component.less']
+})
 export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   loading = false;
@@ -27,9 +33,12 @@ export class RegisterComponent implements OnInit {
     this.registerForm = this.formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      username: ['', Validators.required],
-      password: ['', [Validators.required, Validators.minLength(6)]]
-    });
+      username: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required]
+  }, {
+      validator: MustMatch('password', 'confirmPassword')
+  });
   }
 
   // convenience getter for easy access to form fields

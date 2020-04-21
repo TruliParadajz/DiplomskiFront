@@ -1,17 +1,22 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import { appRoutingModule } from '../app.routing';
 
 import { AuthenticationService, AlertService } from '@app/_services';
+import { ContextMenuComponent } from 'ngx-contextmenu';
+import { LogotitleComponent } from '../logotitle/logotitle.component'
 
-@Component({ templateUrl: 'login.component.html' })
+@Component({
+    templateUrl: 'login.component.html'
+})
 export class LoginComponent implements OnInit {
     loginForm: FormGroup;
     loading = false;
     submitted = false;
     returnUrl: string;
+    @ViewChild(ContextMenuComponent, { static: true }) public basicMenu: ContextMenuComponent;
 
     constructor(
         private formBuilder: FormBuilder,
@@ -25,7 +30,6 @@ export class LoginComponent implements OnInit {
             this.router.navigate(['/']);
         }
     }
-
     ngOnInit() {
         this.loginForm = this.formBuilder.group({
             username: ['', Validators.required],
