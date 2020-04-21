@@ -6,6 +6,8 @@ import { LogotitleComponent } from '../logotitle/logotitle.component'
 
 import { AuthenticationService, UserService, AlertService } from '@app/_services';
 
+import { MustMatch } from '@app/_helpers/must-match.validator';
+
 @Component({
   templateUrl: './register.component.html',
   styleUrls: ['register.component.less']
@@ -32,8 +34,11 @@ export class RegisterComponent implements OnInit {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       username: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
-    });
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required]
+  }, {
+      validator: MustMatch('password', 'confirmPassword')
+  });
   }
 
   // convenience getter for easy access to form fields

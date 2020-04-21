@@ -5,6 +5,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AlertService, UserService, AuthenticationService } from '@app/_services';
 import { first } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { MustMatch, MustMatchOld } from '@app/_helpers/must-match.validator';
 
 @Component({
   selector: 'settings-usersettings',
@@ -32,8 +33,13 @@ export class UsersettingsComponent implements OnInit {
       firstName: [,],
       lastName: [,],
       username: [, Validators.email],
-      password: [, Validators.minLength(6)]
-    });
+      password: [, Validators.minLength(6)],
+      oldPassword: [, [Validators.required, Validators.minLength(6)]]
+    },
+    {      
+      validator: [MustMatchOld('oldPassword')]
+    }
+    );
 
   }
 
