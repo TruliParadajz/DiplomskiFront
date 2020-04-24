@@ -9,8 +9,9 @@ export class EventTaskInput {
     colour: string;
     resizable?: boolean;
     draggable?: boolean;
+    description: string;
+    completed: boolean;
     userId?: number;
-    user: User;
 
     /**
      *Constructor
@@ -23,7 +24,8 @@ export class EventTaskInput {
         resizable: boolean,
         draggable: boolean,
         userId: number,
-        user: User) {
+        description: string,
+        completed: boolean) {
         this.id = id;
         this.startDt = startDt;
         this.endDt = endDt;
@@ -32,6 +34,7 @@ export class EventTaskInput {
         this.resizable = resizable;
         this.draggable = draggable;
         this.userId = userId;
-        this.user = user;
+        this.description = description;
+        this.completed = completed;
     }
 }

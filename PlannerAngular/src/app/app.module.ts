@@ -19,7 +19,8 @@ import { FlatpickrModule } from 'angularx-flatpickr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';;
 import { LogotitleComponent } from './logotitle/logotitle.component';
 
-import { SettingsModule } from './settings/settings.module';
+import { SettingsModule } from './settings/settings.module';;
+import { StatisticsComponent } from './statistics/statistics.component'
 
 @NgModule({
     imports: [
@@ -40,6 +41,7 @@ import { SettingsModule } from './settings/settings.module';
         RegisterComponent,
         AlertComponent,
         LogotitleComponent,
+        StatisticsComponent
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
