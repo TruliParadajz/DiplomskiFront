@@ -303,4 +303,9 @@ export class PlannerViewComponent {
     }
     return calendarEvent;
   }
+
+  setviewDate(event: any) {
+    this.viewDate = event;
+    console.log(event);
+  }
 }

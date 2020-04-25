@@ -15,6 +15,10 @@ const routes: Routes = [
         loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule)
     },
     {path: 'statistics', component: StatisticsComponent},
+    {
+        path: 'planner',
+        loadChildren: () => import('./planner/planner.module').then(m => m.PlannerModule)
+    },
 
     // otherwise redirect to home
     { path: '**', redirectTo: '' }

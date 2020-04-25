@@ -6,6 +6,10 @@ import {SignalRService} from '@app/_signalR-service/signal-r.service';
 import { User } from './_models';
 import { HttpClient } from '@angular/common/http';
 
+function hello() {
+    alert('Hello!!!');
+  }
+
 @Component({ selector: 'app', templateUrl: 'app.component.html' })
 export class AppComponent {
     currentUser: User;
@@ -29,11 +33,7 @@ export class AppComponent {
     private startHttpRequest = () => {
         this.http.get('https://localhost:44364/api/notification')
             .subscribe(res => {
-                // reset alerts on submit
-                // this.alertService.clear();
-                // this.alertService.success('Alert successful', false);
-                console.log("signalR");
-                console.log(res);
+                console.log("signalR service started");
             })
     }
 

@@ -1,3 +1,4 @@
+<div class="calendarContainer">
 <div class="row text-center">
   <div class="col-md-4">
     <div class="btn-group">
@@ -19,14 +20,8 @@
   </div>
   <div class="col-md-4">
     <div class="btn-group">
-      <div class="btn btn-outline-secondary" (click)="setView(CalendarView.Month)" [class.active]="view === CalendarView.Month">
-        Month
-      </div>
-      <div class="btn btn-outline-secondary" (click)="setView(CalendarView.Week)" [class.active]="view === CalendarView.Week">
-        Week
-      </div>
-      <div class="btn btn-outline-secondary" (click)="setView(CalendarView.Day)" [class.active]="view === CalendarView.Day">
-        Day
+      <div *ngIf="view === CalendarView.Day" class="btn btn-outline-secondary" (click)="setView(CalendarView.Month)">
+        Return to Month View
       </div>
     </div>
   </div>
@@ -38,12 +33,10 @@
     (eventClicked)="editEvent($event.event)" (eventTimesChanged)="eventTimesChanged($event)" [weekStartsOn]="1"
     [cellTemplate]="customCellTemplate">
   </mwl-calendar-month-view>
-  <mwl-calendar-week-view *ngSwitchCase="CalendarView.Week" [viewDate]="viewDate" [events]="events" [refresh]="refresh"
-    (eventClicked)="editEvent($event.event)" (eventTimesChanged)="eventTimesChanged($event)">
-  </mwl-calendar-week-view>
   <mwl-calendar-day-view *ngSwitchCase="CalendarView.Day" [viewDate]="viewDate" [events]="events" [refresh]="refresh"
     (eventClicked)="editEvent($event.event)" (eventTimesChanged)="eventTimesChanged($event)">
   </mwl-calendar-day-view>
+</div>
 </div>
 
 <!-- Custom Cell Template -->
@@ -60,8 +53,8 @@
     Add a New Task
   </ng-template>
   <ng-template contextMenuItem divider="true"></ng-template>
-  <ng-template contextMenuItem>
-    Clear the day
+  <ng-template contextMenuItem (execute)="setviewDate($event.item); setView(CalendarView.Day)" [class.active]="view === CalendarView.Day">
+    Check the day
   </ng-template>
 </context-menu>
 

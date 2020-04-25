@@ -4,6 +4,10 @@ import { environment } from '@environments/environment';
 import { NotificationModel } from '@app/_models/notificationModel';
 import { AlertService } from '@app/_services';
 
+function showAlert(text) {
+  alert(text);
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -26,10 +30,7 @@ export class SignalRService {
   public addDataListener = () => {
     this.hubConnection.on('transfernotifications', (data: NotificationModel) => {
       this.data = data;
-      // reset alerts on submit
-      this.alertService.clear();
-      this.alertService.warning(data.text, false);
-      console.log("realData");
+      showAlert(data.text);
       console.log(data);
     });
   }
