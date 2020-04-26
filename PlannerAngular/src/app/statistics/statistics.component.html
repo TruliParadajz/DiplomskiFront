@@ -1,17 +1,18 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<div class="col-md-10 offset-md-1 mt-5">
+<script src="node_modules/chart.js/src/chart.js"></script>
+<div class="col-md-10 offset-md-1 mt-5 custom-card-class">
     <div class="card">
         <div class="card-header cardHeaderClass">
-            <h3>Statistics</h3>
+            <h4>Statistics</h4>
         </div>
-        <div class="custom-menu"> 
+        <div class="custom-menu" style="z-index: 5;">
             <button mat-button [matMenuTriggerFor]="menu">
                 <mat-icon>bar_chart</mat-icon>
                 <span>Choose a chart</span>
             </button>
             <mat-menu #menu="matMenu">
                 <button mat-menu-item (click)="showCompletion()">
-                   <H6>Completion View</H6>
+                    <H6>Completion View</H6>
                 </button>
                 <button mat-menu-item (click)="showTime()">
                     <H6>Time View</H6>
@@ -25,6 +26,12 @@
                     [legend]="pieChartLegend">
                 </canvas>
             </div>
+        </div>
+        <div class="custom-total">
+            Total Count:
+            <b>
+                {{eventList.length}}
+            </b>
         </div>
     </div>
 </div>

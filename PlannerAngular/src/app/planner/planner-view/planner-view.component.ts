@@ -1,53 +1,41 @@
 import {
   Component,
-  ChangeDetectionStrategy,
   ViewChild,
   TemplateRef,
-  Input
+  ViewEncapsulation
 } from '@angular/core';
 import {
-  startOfDay,
-  endOfDay,
-  subDays,
-  addDays,
-  endOfMonth,
   isSameDay,
   isSameMonth,
   addHours
 } from 'date-fns';
-import { Subject, BehaviorSubject, Observable } from 'rxjs';
+import { Subject, BehaviorSubject } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {
   CalendarEvent,
   CalendarEventAction,
   CalendarEventTimesChangedEvent,
-  CalendarView
+  CalendarView,
+  CalendarDateFormatter,
+  CalendarMonthViewDay
 } from 'angular-calendar';
 
 import { ContextMenuComponent } from 'ngx-contextmenu';
 import { EventTaskServiceService } from '../event-task-service.service';
 import { User, EventTaskInput } from '@app/_models';
-import { first } from 'rxjs/operators';
-
-const colors: any = {
-  red: {
-    primary: '#ad2121',
-    secondary: '#FAE3E3'
-  },
-  blue: {
-    primary: '#1e90ff',
-    secondary: '#D1E8FF'
-  },
-  yellow: {
-    primary: '#e3bc08',
-    secondary: '#FDF1BA'
-  }
-};
+import { DayTimeFormatter } from './custom-day-format.provider';
 
 @Component({
   selector: 'app-planner-view',
   templateUrl: './planner-view.component.html',
-  styleUrls: ['./planner-view.component.less']
+  styleUrls: ['./planner-view.component.less'],
+  providers: [
+    {
+      provide: CalendarDateFormatter,
+      useClass: DayTimeFormatter,
+    },
+  ],
+  encapsulation: ViewEncapsulation.None
 })
 
 // Code
@@ -144,18 +132,22 @@ export class PlannerViewComponent {
   eventAdded(newEventData: EventTaskInput): void {
     this.eventTaskService.addEventTask(newEventData).subscribe(result => {
 
-      if(this.eventList == null){
-        this.eventList = [ result ];
+      if (this.eventList == null) {
+        this.eventList = [result];
       }
-      else{
+      else {
         this.eventList = [
           ...this.eventList,
           result
         ];
       }
-      
+
       let newCalendarEvent = this.convertToCalendarEvent(result);
 
+      // if(newCalendarEvent.end == null)
+      // {
+      //   newCalendarEvent = this.endToUndefined(newCalendarEvent);
+      // }
       if (this.events == null) {
         this.events = [newCalendarEvent];
       }
@@ -185,7 +177,7 @@ export class PlannerViewComponent {
         this.refresh.next();
       }
     );
-    this.refresh.next();    
+    this.refresh.next();
   }
 
   eventDeleted(newEventData: EventTaskInput): void {
@@ -258,7 +250,7 @@ export class PlannerViewComponent {
     this.inputEvent = eventFound;
     this.isDelete = true;
     this.isComplete = false;
-    this.modal.open(this.eventContent)    
+    this.modal.open(this.eventContent)
   }
   completeEvent(eventToComplete: CalendarEvent) {
     this.inputEvent = {
@@ -276,7 +268,7 @@ export class PlannerViewComponent {
     this.inputEvent = eventFound;
     this.isDelete = false;
     this.isComplete = true;
-    this.modal.open(this.eventContent) 
+    this.modal.open(this.eventContent)
   }
 
   closeModal(): void {
@@ -301,6 +293,9 @@ export class PlannerViewComponent {
       },
       actions: this.actions
     }
+    if (input.endDt == null) {
+      calendarEvent.end = new Date('09-09-9999');
+    }
     return calendarEvent;
   }
 
@@ -308,4 +303,11 @@ export class PlannerViewComponent {
     this.viewDate = event;
     console.log(event);
   }
+
+  beforeMonthViewRender({ body }: { body: CalendarMonthViewDay[] }): void {
+    body.forEach((day) => {
+      day.cssClass = 'cal-enabled';
+    });
+  }
+
 }

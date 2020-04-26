@@ -14,13 +14,20 @@ import { EventContentComponent } from './event-content/event-content.component';
 import { ListViewComponent } from './list-view/list-view.component';
 import { MatTableModule } from '@angular/material/table';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
-import { CustomDateFormat } from '@app/_pipes';
+import { CustomDateFormat, CustomCompletedFormat } from '@app/_pipes';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon'
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
+import { MatPaginatorModule } from '@angular/material/paginator'
 
 @NgModule({
   declarations: [PlannerViewComponent,
     EventContentComponent,
     ListViewComponent,
-    CustomDateFormat
+    CustomDateFormat,
+    CustomCompletedFormat
   ],
   imports: [
     ReactiveFormsModule,
@@ -31,7 +38,13 @@ import { CustomDateFormat } from '@app/_pipes';
     FlatpickrModule,
     ContextMenuModule.forRoot({ useBootstrap4: true }),
     plannerRoutingModule,
-    MatTableModule
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatPaginatorModule
   ],
   exports: [
     PlannerViewComponent,

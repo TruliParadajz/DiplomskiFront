@@ -4,6 +4,8 @@ import { SingleDataSet, Label, monkeyPatchChartJsLegend, monkeyPatchChartJsToolt
 import { EventTaskServiceService } from '@app/planner/event-task-service.service';
 import { BehaviorSubject } from 'rxjs';
 import { User, EventTaskInput } from '@app/_models';
+import * as pluginDataLabels from 'chartjs-plugin-datalabels';
+import { isThisSecond } from 'date-fns';
 
 @Component({
   selector: 'app-statistics',
@@ -25,17 +27,37 @@ export class StatisticsComponent implements OnInit {
   // Pie
   public pieChartOptions: ChartOptions = {
     responsive: true,
+    legend: {
+      position: 'top',
+    },
+    plugins: {
+      datalabels: {
+        font: {
+          weight: 'bold',
+          size: 20,
+        },
+        formatter: (value, ctx) => {
+          if (value != null && value != 0) {
+            const label = ((Math.round(value / this.eventList.length * 100) / 100) * 100).toPrecision(2).toString() + "%";
+            return label;
+          }
+          else {
+            return '';
+          }
+        }
+      }
+    }
   };
 
   public pieChartLabels: Label[] = ['Completed', 'Ongoing'];
-  public pieChartData: SingleDataSet = [this.eventsCompleted.length * 100, this.eventsOngoing.length * 100];
+  public pieChartData: SingleDataSet = [this.eventsCompleted.length, this.eventsOngoing.length];
   public pieChartType: ChartType = 'pie';
   public pieChartLegend = true;
-  public pieChartPlugins = [];
-  public pieChartColors: Array < any > = [{
+  public pieChartPlugins = [pluginDataLabels];
+  public pieChartColors: Array<any> = [{
     backgroundColor: ['rgba(173, 33, 33, 1)', 'rgba(30, 144, 255, 1)', 'rgba(227, 188, 8, 1)'],
     borderColor: []
- }];
+  }];
   constructor(private eventTaskService: EventTaskServiceService) {
     this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser')));
     monkeyPatchChartJsTooltip();
@@ -70,7 +92,5 @@ export class StatisticsComponent implements OnInit {
 
     this.pieChartColors[0].backgroundColor = ['rgba(173, 33, 33, 1)', 'rgba(30, 144, 255, 1)', 'rgba(227, 188, 8, 1)'];
   }
-  
-  switchT
 
 }
