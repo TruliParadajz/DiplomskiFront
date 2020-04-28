@@ -24,6 +24,8 @@ export class StatisticsComponent implements OnInit {
   eventsShort: EventTaskInput[] = [];
   eventsLong: EventTaskInput[] = [];
   eventsIndefinite: EventTaskInput[] = [];
+
+  featureTitle: string;
   // Pie
   public pieChartOptions: ChartOptions = {
     responsive: true,
@@ -38,7 +40,7 @@ export class StatisticsComponent implements OnInit {
         },
         formatter: (value, ctx) => {
           if (value != null && value != 0) {
-            const label = ((Math.round(value / this.eventList.length * 100) / 100) * 100).toPrecision(2).toString() + "%";
+            const label = ((Math.round(value / this.eventList.length * 100) / 100) * 100).toString() + "%";
             return label;
           }
           else {
@@ -58,6 +60,7 @@ export class StatisticsComponent implements OnInit {
     backgroundColor: ['rgba(173, 33, 33, 1)', 'rgba(30, 144, 255, 1)', 'rgba(227, 188, 8, 1)'],
     borderColor: []
   }];
+  
   constructor(private eventTaskService: EventTaskServiceService) {
     this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser')));
     monkeyPatchChartJsTooltip();
@@ -80,6 +83,7 @@ export class StatisticsComponent implements OnInit {
     this.pieChartData = [this.eventsCompleted.length, this.eventsOngoing.length];
 
     this.pieChartColors[0].backgroundColor = ['rgba(227, 188, 8, 1)', 'rgba(30, 144, 255, 1)'];
+    this.featureTitle = "Completion view"
   }
 
   showTime() {
@@ -91,6 +95,7 @@ export class StatisticsComponent implements OnInit {
     this.pieChartData = [this.eventsShort.length, this.eventsLong.length, this.eventsIndefinite.length];
 
     this.pieChartColors[0].backgroundColor = ['rgba(173, 33, 33, 1)', 'rgba(30, 144, 255, 1)', 'rgba(227, 188, 8, 1)'];
+    this.featureTitle = "Time view"
   }
 
 }

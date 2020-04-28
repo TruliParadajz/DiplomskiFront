@@ -26,7 +26,8 @@ import { ChartsModule } from 'ng2-charts';
 import { MatMenuModule } from '@angular/material/menu'
 import {MatButtonModule} from '@angular/material/button';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
-import {MatIconModule} from '@angular/material/icon'
+import {MatIconModule} from '@angular/material/icon';
+import { UnauthorizedComponent } from './unauthorized/unauthorized.component'
 
 @NgModule({
     imports: [
@@ -52,7 +53,8 @@ import {MatIconModule} from '@angular/material/icon'
         RegisterComponent,
         AlertComponent,
         LogotitleComponent,
-        StatisticsComponent
+        StatisticsComponent,
+        UnauthorizedComponent
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

@@ -3,9 +3,12 @@
 <div class="col-md-10 offset-md-1 mt-5 custom-card-class">
     <div class="card">
         <div class="card-header cardHeaderClass">
-            <h4>Statistics</h4>
+            <h4>
+                Statistics
+            </h4>
+            
         </div>
-        <div class="custom-menu" style="z-index: 5;">
+        <div class="custom-menu title-title" style="z-index: 5;">
             <button mat-button [matMenuTriggerFor]="menu">
                 <mat-icon>bar_chart</mat-icon>
                 <span>Choose a chart</span>
@@ -18,6 +21,10 @@
                     <H6>Time View</H6>
                 </button>
             </mat-menu>
+
+            <h6 class="feature-title">
+                Current view: {{featureTitle}}
+            </h6>
         </div>
         <div>
             <div style="display: block; padding-top: 25px;">

@@ -4,7 +4,7 @@
     <div class="navbar-nav">
         <a class="nav-item nav-link" routerLink="planner/calendar-view">Calendar</a>
         <a *ngIf="currentUserSubject.value.power == 1" class="nav-item nav-link" routerLink="planner/list-view">List</a>
-        <a *ngIf="currentUserSubject.value.power == 0" class="nav-item nav-link inactive">List</a>
+        <a *ngIf="currentUserSubject.value.power == 0" class="nav-item nav-link" routerLink="unauthorized">List</a>
         <a class="nav-item nav-link" routerLink="statistics">Statistics</a>
     </div>
     <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
