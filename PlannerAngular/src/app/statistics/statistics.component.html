@@ -1,0 +1,44 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script src="node_modules/chart.js/src/chart.js"></script>
+<div class="col-md-10 offset-md-1 mt-5 custom-card-class">
+    <div class="card">
+        <div class="card-header cardHeaderClass">
+            <h4>
+                Statistics
+            </h4>
+            
+        </div>
+        <div class="custom-menu title-title" style="z-index: 5;">
+            <button mat-button [matMenuTriggerFor]="menu">
+                <mat-icon>bar_chart</mat-icon>
+                <span>Choose a chart</span>
+            </button>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="showCompletion()">
+                    <H6>Completion View</H6>
+                </button>
+                <button mat-menu-item (click)="showTime()">
+                    <H6>Time View</H6>
+                </button>
+            </mat-menu>
+
+            <h6 class="feature-title">
+                Current view: {{featureTitle}}
+            </h6>
+        </div>
+        <div>
+            <div style="display: block; padding-top: 25px;">
+                <canvas baseChart [data]="pieChartData" [labels]="pieChartLabels" [chartType]="pieChartType"
+                    [options]="pieChartOptions" [plugins]="pieChartPlugins" [colors]="pieChartColors"
+                    [legend]="pieChartLegend">
+                </canvas>
+            </div>
+        </div>
+        <div class="custom-total">
+            Total Count:
+            <b>
+                {{eventList.length}}
+            </b>
+        </div>
+    </div>
+</div>

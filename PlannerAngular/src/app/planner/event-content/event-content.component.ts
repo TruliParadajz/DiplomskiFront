@@ -2,6 +2,7 @@ import { Component, OnInit, TemplateRef, Output, EventEmitter, Input, Type } fro
 import { CalendarEvent } from 'angular-calendar';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { EventTaskInput, User } from '@app/_models';
 
 const colors: any = {
   red: {
@@ -30,22 +31,27 @@ export class EventContentComponent implements OnInit {
   @Output() eventDeleted = new EventEmitter();
   @Output() modalClosed = new EventEmitter();
 
-  @Input() inputEvent: CalendarEvent;
+  @Input() inputEvent: EventTaskInput;
   @Input() isDelete: boolean;
+  @Input() isComplete: boolean;
 
   eventTaskForm: FormGroup;
 
   viewDate: Date = new Date();
-  eventTemplate: CalendarEvent;
+  eventTemplate: EventTaskInput;
 
   dateFrom: Date;
   dateTo: Date;
   eventTitle: string;
+  description: string;
+  completed: boolean = true;
   submitted: boolean = false;
   createFlag: boolean = false;
   editFlag: boolean = false;
   loading: boolean = false;
   dateError: boolean = false;
+
+  inputString: string ="";
 
   constructor(private formBuilder: FormBuilder, ) { }
 
@@ -53,7 +59,7 @@ export class EventContentComponent implements OnInit {
     return (group: FormGroup): { [key: string]: any } => {
       let f = group.controls[from];
       let t = group.controls[to];
-      if (t != null && f.value > t.value) {
+      if (t.value != null && f.value > t.value) {
         return {
           dates: "Date from should be less than Date to"
         };
@@ -65,8 +71,16 @@ export class EventContentComponent implements OnInit {
   ngOnInit(): void {
     var today = new Date();
     this.eventTitle = this.inputEvent.title;
-    this.dateFrom = this.inputEvent.start;
-    this.dateTo = this.inputEvent.end;
+    this.dateFrom = this.inputEvent.startDt;
+    this.dateTo = this.inputEvent.endDt;
+    this.description = this.inputEvent.description;
+    this.completed = this.inputEvent.completed;
+    if(this.completed == true) {
+      this.inputString = " activate ";
+    }
+    else {
+      this.inputString = " complete ";
+    }
     if (this.dateFrom.getDate() === today.getDate()) {
       this.dateFrom.setTime(today.getTime());
     }
@@ -74,7 +88,9 @@ export class EventContentComponent implements OnInit {
     this.eventTaskForm = this.formBuilder.group({
       eventTitle: [this.eventTitle, [Validators.required, Validators.minLength(4), Validators.maxLength(20)]],
       dateFrom: [this.dateFrom, Validators.required],
-      dateTo: [this.dateTo]
+      dateTo: [this.dateTo],
+      description: [this.description],
+      completed: [this.completed]
     },
       { validator: this.dateLessThan('dateFrom', 'dateTo') });
   }
@@ -82,32 +98,39 @@ export class EventContentComponent implements OnInit {
 
   get errors() { return this.eventTaskForm.errors; }
 
-  addEvent(eventTitle: string, dateFrom: Date, dateTo: Date): void {
+  addEvent(eventTitle: string, dateFrom: Date, dateTo: Date, description: string): void {
     this.eventTemplate =
     {
       title: eventTitle,
-      start: dateFrom,
-      end: dateTo,
-      color: colors.red,
+      startDt: dateFrom,
+      endDt: dateTo,
+      colour: colors.red.primary,
       draggable: true,
-      resizable: {
-        beforeStart: true,
-        afterEnd: true
-      }
+      resizable: true,
+      completed: false,
+      description: description,
+      userId: this.inputEvent.userId
     };
     this.eventAdded.emit(this.eventTemplate);
   }
 
-  editEvent(eventTitle: string, dateFrom: Date, dateTo: Date) {
+  editEvent(eventTitle: string, dateFrom: Date, dateTo: Date, description: string) {
     this.eventTemplate = this.inputEvent;
     this.eventTemplate.title = eventTitle;
-    this.eventTemplate.start = dateFrom;
-    this.eventTemplate.end = dateTo;
+    this.eventTemplate.startDt = dateFrom;
+    this.eventTemplate.endDt = dateTo;
+    this.eventTemplate.description = description
     this.eventEdited.emit(this.eventTemplate);
   }
 
   deleteEvent() {
     this.eventDeleted.emit(this.inputEvent);
+  }
+
+  completeEvent() {
+    this.completed = !this.completed
+    this.inputEvent.completed = this.completed;
+    this.eventEdited.emit(this.inputEvent);
   }
 
   closeModal(): void {
@@ -131,10 +154,16 @@ export class EventContentComponent implements OnInit {
 
     this.loading = true;
     if (this.createFlag) {
-      this.addEvent(this.eventTaskForm.value.eventTitle, this.eventTaskForm.value.dateFrom, this.eventTaskForm.value.dateTo);
+      this.addEvent(this.eventTaskForm.value.eventTitle, 
+        this.eventTaskForm.value.dateFrom, 
+        this.eventTaskForm.value.dateTo,
+        this.eventTaskForm.value.description);
     }
     if (this.editFlag) {
-      this.editEvent(this.eventTaskForm.value.eventTitle, this.eventTaskForm.value.dateFrom, this.eventTaskForm.value.dateTo);
+      this.editEvent(this.eventTaskForm.value.eventTitle,
+         this.eventTaskForm.value.dateFrom, 
+         this.eventTaskForm.value.dateTo,
+         this.eventTaskForm.value.description);
     }
   }
 

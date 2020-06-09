@@ -36,63 +36,40 @@ export class EventTaskServiceService {
     return eventTaskOutput;
   }
 
-  createReturnEventTask(response: EventTaskInput): CalendarEvent {
-    var returnEventTask: CalendarEvent;
-    returnEventTask = this.initializeEventTask(returnEventTask);
-
-    returnEventTask.id = response.id;
-    returnEventTask.title = response.title;
-    returnEventTask.start = parseISO(response.startDt.toString() + "Z");
-    if(response.endDt != null) {
-      returnEventTask.end = parseISO(response.endDt.toString() + "Z");
+  createReturnEventTask(response: EventTaskInput): EventTaskInput {
+    response.startDt = parseISO(response.startDt.toString() + "Z");
+    if (response.endDt != null) {
+      response.endDt = parseISO(response.endDt.toString() + "Z");
     }
-    returnEventTask.color.primary = response.colour;
-    returnEventTask.color.secondary = response.colour;
-    returnEventTask.resizable.beforeStart = response.resizable;
-    returnEventTask.resizable.afterEnd = response.resizable;
-    returnEventTask.draggable = response.draggable;
-
-    return returnEventTask;
+    return response;
   }
 
-  getEventTasks(userId: number): Observable<any[]> {
-
-    var eventTasksList: EventTaskInput[];
-    var eventTask: CalendarEvent ;
+  getEventTasks(userId: number): Observable<EventTaskInput[]> {
 
     return this.http.get<EventTaskInput[]>(`${environment.apiUrl}/eventTasks/${userId}`)
       .pipe(
         map(
           (response: EventTaskInput[]) => {
-            var eventTasks: CalendarEvent[] = [];
-            eventTasksList = response;
 
-            if (eventTasksList.length <= 0) {
+            if (response.length <= 0) {
               return null;
             }
-            eventTasksList.forEach(element => {
-              eventTask = this.createReturnEventTask(element);
-
-              eventTasks.push({ ...eventTask });
+            response.forEach(element => {
+              element = this.createReturnEventTask(element);
             });
-
-            return eventTasks;
+            return response;
           }
         )
       );
 
   }
 
-  deleteEventTasks(taskId: number): Observable<CalendarEvent> {
-    var eventTask = new EventTaskInput(null, null, null, null, null, null, null, null, null);
+  deleteEventTasks(taskId: number): Observable<EventTaskInput> {
 
     return this.http.delete<EventTaskInput>(`${environment.apiUrl}/eventTasks/${taskId}`)
       .pipe(
         map((response: EventTaskInput) => {
-          eventTask = response;
-
           var eventTaskReturn = this.createReturnEventTask(response);
-
           return eventTaskReturn;
         }
         )
@@ -100,31 +77,24 @@ export class EventTaskServiceService {
 
   }
 
-  editEventTask(editEventTask: EventTaskInput): Observable<CalendarEvent> {
-    var eventTask = new EventTaskInput(null, null, null, null, null, null, null, null, null);
+  editEventTask(editEventTask: EventTaskInput): Observable<EventTaskInput> {
 
     return this.http.put<EventTaskInput>(`${environment.apiUrl}/eventTasks`, editEventTask)
       .pipe(
         map((response: EventTaskInput) => {
-          eventTask = response;
-
           var eventTaskReturn = this.createReturnEventTask(response);
-
           return eventTaskReturn;
         }
         )
       );
   }
 
-  addEventTask(newEventTask: EventTaskInput): Observable<CalendarEvent> {
-    var eventTask = new EventTaskInput(null, null, null, null, null, null, null, null, null);
+  addEventTask(newEventTask: EventTaskInput): Observable<EventTaskInput> {
 
     return this.http.post<EventTaskInput>(`${environment.apiUrl}/eventTasks`, newEventTask)
       .pipe(
         map(
           (response: EventTaskInput) => {
-            console.log(response);
-            eventTask = response;
 
             var eventTaskReturn = this.createReturnEventTask(response);
             return eventTaskReturn;

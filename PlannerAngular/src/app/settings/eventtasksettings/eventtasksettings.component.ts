@@ -59,8 +59,6 @@ export class EventtasksettingsComponent implements OnInit {
             appNotification: [res.appNotification,],
             hours: [res.hours,]
           });
-          console.log(this.f.emailNotification.dirty);
-          console.log(this.f.emailNotification.pristine);
         }
       );
   }
@@ -111,8 +109,6 @@ export class EventtasksettingsComponent implements OnInit {
       appNotification: [this.f.appNotification.value,],
       hours: [this.hoursValue,]
     });
-    console.log(this.f.emailNotification.dirty);
-    console.log(this.f.emailNotification.pristine);
   }
 
   appChanged(event) {
@@ -123,8 +119,6 @@ export class EventtasksettingsComponent implements OnInit {
       appNotification: [this.isApp,],
       hours: [this.hoursValue,]
     });
-    console.log(this.f.emailNotification.dirty);
-    console.log(this.f.emailNotification.pristine);
   }
 
   emailChanged(event) {
@@ -135,7 +129,5 @@ export class EventtasksettingsComponent implements OnInit {
       appNotification: [this.f.appNotification.value,],
       hours: [this.hoursValue,]
     });
-    console.log(this.f.emailNotification.dirty);
-    console.log(this.f.emailNotification.pristine);
   }
 }

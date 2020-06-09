@@ -1,102 +1,51 @@
-<div class="row text-center">
-  <div class="col-md-4">
-    <div class="btn-group">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<div class="calendarContainer">
+  <div class="row text-center">
+    <div class="col-md-4">
+      <div class="btn-group">
+
+        <!-- <div class="btn btn-outline-secondary" mwlCalendarToday [(viewDate)]="viewDate">
+          Current
+        </div> -->
+      </div>
+    </div>
+    <div class="col-md-4" style="display:flex; text-align: center;">
       <div class="btn btn-outline-secondary" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate"
-        (viewDateChange)="closeOpenMonthViewDay()">
-        Previous
+        (viewDateChange)="closeOpenMonthViewDay()" style="margin: 0 auto; margin-right: 10px; height: 40px;">
+        <mat-icon>
+          navigate_before
+        </mat-icon>
       </div>
-      <div class="btn btn-outline-secondary" mwlCalendarToday [(viewDate)]="viewDate">
-        Current
-      </div>
+      <h3 style=" vertical-align: bottom;">{{ viewDate | calendarDate:(view + 'ViewTitle'):'en'}}</h3>
       <div class="btn btn-outline-secondary" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate"
-        (viewDateChange)="closeOpenMonthViewDay()">
-        Next
+        (viewDateChange)="closeOpenMonthViewDay()" style="margin: 0 auto; margin-left: 10px; height: 40px;">
+        <mat-icon style="height: 15px;">
+          navigate_next
+        </mat-icon>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="btn-group">
+        <div *ngIf="view === CalendarView.Day" class="btn btn-outline-secondary" (click)="setView(CalendarView.Month)">
+          Return to Month View
+        </div>
+
       </div>
     </div>
   </div>
-  <div class="col-md-4">
-    <h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en'}}</h3>
-  </div>
-  <div class="col-md-4">
-    <div class="btn-group">
-      <div class="btn btn-outline-secondary" (click)="setView(CalendarView.Month)" [class.active]="view === CalendarView.Month">
-        Month
-      </div>
-      <div class="btn btn-outline-secondary" (click)="setView(CalendarView.Week)" [class.active]="view === CalendarView.Week">
-        Week
-      </div>
-      <div class="btn btn-outline-secondary" (click)="setView(CalendarView.Day)" [class.active]="view === CalendarView.Day">
-        Day
-      </div>
-    </div>
+  <br />
+  <div [ngSwitch]="view" class="mat-app-background basic-container" style="position: relative">
+    <mwl-calendar-month-view *ngSwitchCase="CalendarView.Month" [viewDate]="viewDate" [events]="events"
+      [refresh]="refresh" [activeDayIsOpen]="activeDayIsOpen" (dayClicked)="dayClicked($event.day)"
+      (eventClicked)="editEvent($event.event)" (eventTimesChanged)="eventTimesChanged($event)" [weekStartsOn]="1"
+      [cellTemplate]="customCellTemplate" (beforeViewRender)="beforeMonthViewRender($event)">
+    </mwl-calendar-month-view>
+    <mwl-calendar-day-view *ngSwitchCase="CalendarView.Day" [viewDate]="viewDate" [events]="events" [refresh]="refresh"
+      (eventClicked)="editEvent($event.event)" (eventTimesChanged)="eventTimesChanged($event)">
+    </mwl-calendar-day-view>
   </div>
 </div>
-<br />
-<div [ngSwitch]="view" class="mat-app-background basic-container calendarContainer" style="position: relative">
-  <mwl-calendar-month-view *ngSwitchCase="CalendarView.Month" [viewDate]="viewDate" [events]="events"
-    [refresh]="refresh" [activeDayIsOpen]="activeDayIsOpen" (dayClicked)="dayClicked($event.day)"
-    (eventClicked)="editEvent($event.event)" (eventTimesChanged)="eventTimesChanged($event)" [weekStartsOn]="1"
-    [cellTemplate]="customCellTemplate">
-  </mwl-calendar-month-view>
-  <mwl-calendar-week-view *ngSwitchCase="CalendarView.Week" [viewDate]="viewDate" [events]="events" [refresh]="refresh"
-    (eventClicked)="editEvent($event.event)" (eventTimesChanged)="eventTimesChanged($event)">
-  </mwl-calendar-week-view>
-  <mwl-calendar-day-view *ngSwitchCase="CalendarView.Day" [viewDate]="viewDate" [events]="events" [refresh]="refresh"
-    (eventClicked)="editEvent($event.event)" (eventTimesChanged)="eventTimesChanged($event)">
-  </mwl-calendar-day-view>
-</div>
-
-<!-- <h3>
-  Edit events
-  <button class="btn btn-primary pull-right" (click)="addEvent()">
-    Add new
-  </button>
-  <div class="clearfix"></div>
-</h3> -->
-
-<!-- <div class="table-responsive">
-  <table class="table table-bordered">
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Primary color</th>
-        <th>Secondary color</th>
-        <th>Starts at</th>
-        <th>Ends at</th>
-        <th>Remove</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr *ngFor="let event of events">
-        <td>
-          <input type="text" class="form-control" [(ngModel)]="event.title" (keyup)="refresh.next()" />
-        </td>
-        <td>
-          <input type="color" [(ngModel)]="event.color.primary" (change)="refresh.next()" />
-        </td>
-        <td>
-          <input type="color" [(ngModel)]="event.color.secondary" (change)="refresh.next()" />
-        </td>
-        <td>
-          <input class="form-control" type="text" mwlFlatpickr [(ngModel)]="event.start"
-            (ngModelChange)="refresh.next()" [altInput]="true" [convertModelValue]="true" [enableTime]="true"
-            [time24hr]="true" dateFormat="Y-m-dTH:i" altFormat="F j, Y H:i" placeholder="Not set" />
-        </td>
-        <td>
-          <input class="form-control" type="text" mwlFlatpickr [(ngModel)]="event.end" (ngModelChange)="refresh.next()"
-            [altInput]="true" [convertModelValue]="true" [enableTime]="true" [time24hr]="true" dateFormat="Y-m-dTH:i"
-            altFormat="F j, Y H:i" placeholder="Not set" />
-        </td>
-        <td>
-          <button class="btn btn-danger" (click)="deleteEvent(event)">
-            Delete
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div> -->
 
 <!-- Custom Cell Template -->
 <ng-template #customCellTemplate let-day="day" let-locale="locale">
@@ -112,15 +61,16 @@
     Add a New Task
   </ng-template>
   <ng-template contextMenuItem divider="true"></ng-template>
-  <ng-template contextMenuItem>
-    Clear the day
+  <ng-template contextMenuItem (execute)="setviewDate($event.item); setView(CalendarView.Day)"
+    [class.active]="view === CalendarView.Day">
+    Check the day
   </ng-template>
 </context-menu>
 
-<!-- Context Menu -->
+<!-- Create/Edit/Delete/Complete Context -->
 <ng-template #eventContent let-close="close">
   <app-event-content (eventAdded)="eventAdded($event)" (modalClosed)="closeModal($event)"
     (eventEdited)="eventEdited($event)" (eventDeleted)="eventDeleted($event)" [inputEvent]="inputEvent"
-    [isDelete]="isDelete">
+    [isDelete]="isDelete" [isComplete]="isComplete">
   </app-event-content>
 </ng-template>

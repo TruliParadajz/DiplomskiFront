@@ -1,6 +1,6 @@
 ﻿import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
@@ -19,7 +19,15 @@ import { FlatpickrModule } from 'angularx-flatpickr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';;
 import { LogotitleComponent } from './logotitle/logotitle.component';
 
-import { SettingsModule } from './settings/settings.module';
+import { SettingsModule } from './settings/settings.module';;
+import { StatisticsComponent } from './statistics/statistics.component'
+
+import { ChartsModule } from 'ng2-charts';
+import { MatMenuModule } from '@angular/material/menu'
+import {MatButtonModule} from '@angular/material/button';
+import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
+import { UnauthorizedComponent } from './unauthorized/unauthorized.component'
 
 @NgModule({
     imports: [
@@ -31,7 +39,12 @@ import { SettingsModule } from './settings/settings.module';
         CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
         PlannerModule,
         BrowserAnimationsModule,
-        SettingsModule
+        SettingsModule,
+        ChartsModule,
+        FormsModule,
+        MatMenuModule,
+        MatButtonModule,
+        MatIconModule
     ],
     declarations: [
         AppComponent,
@@ -40,10 +53,13 @@ import { SettingsModule } from './settings/settings.module';
         RegisterComponent,
         AlertComponent,
         LogotitleComponent,
+        StatisticsComponent,
+        UnauthorizedComponent
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+        { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' } },
     ],
     bootstrap: [AppComponent],
     exports: []

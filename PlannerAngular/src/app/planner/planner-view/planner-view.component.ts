@@ -1,59 +1,45 @@
 import {
   Component,
-  ChangeDetectionStrategy,
   ViewChild,
   TemplateRef,
-  Input
+  ViewEncapsulation
 } from '@angular/core';
 import {
-  startOfDay,
-  endOfDay,
-  subDays,
-  addDays,
-  endOfMonth,
   isSameDay,
   isSameMonth,
   addHours
 } from 'date-fns';
-import { Subject, BehaviorSubject, Observable } from 'rxjs';
+import { Subject, BehaviorSubject } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {
   CalendarEvent,
   CalendarEventAction,
   CalendarEventTimesChangedEvent,
-  CalendarView
+  CalendarView,
+  CalendarDateFormatter,
+  CalendarMonthViewDay
 } from 'angular-calendar';
 
 import { ContextMenuComponent } from 'ngx-contextmenu';
 import { EventTaskServiceService } from '../event-task-service.service';
 import { User, EventTaskInput } from '@app/_models';
-import { first } from 'rxjs/operators';
-
-const colors: any = {
-  red: {
-    primary: '#ad2121',
-    secondary: '#FAE3E3'
-  },
-  blue: {
-    primary: '#1e90ff',
-    secondary: '#D1E8FF'
-  },
-  yellow: {
-    primary: '#e3bc08',
-    secondary: '#FDF1BA'
-  }
-};
+import { DayTimeFormatter } from './custom-day-format.provider';
 
 @Component({
   selector: 'app-planner-view',
   templateUrl: './planner-view.component.html',
-  styleUrls: ['./planner-view.component.less']
+  styleUrls: ['./planner-view.component.less'],
+  providers: [
+    {
+      provide: CalendarDateFormatter,
+      useClass: DayTimeFormatter,
+    },
+  ],
+  encapsulation: ViewEncapsulation.None
 })
 
 // Code
 export class PlannerViewComponent {
-  @ViewChild('modalContent', { static: true }) modalContent: TemplateRef<any>;
-
   @ViewChild(ContextMenuComponent, { static: true }) public basicMenu: ContextMenuComponent;
 
   @ViewChild('eventContent', { static: true }) eventContent: TemplateRef<any>;
@@ -64,46 +50,59 @@ export class PlannerViewComponent {
 
   viewDate: Date = new Date();
 
-  modalData: {
-    action: string;
-    event: CalendarEvent;
-  };
-
-  inputEvent: CalendarEvent;
+  inputEvent: EventTaskInput;
   //Bool value for delete content
-  isDelete: boolean;
+  isDelete: boolean = false;;
+  isComplete: boolean = false;
 
   weekStartsOn = "1";
 
   actions: CalendarEventAction[] = [
     {
-      label: '<i class="fa fa-fw fa-pencil"></i>',
+      label: '<i class="fa fa-fw fa-pencil custom-button-class"></i>',
       a11yLabel: 'Edit',
       onClick: ({ event }: { event: CalendarEvent }): void => {
         this.editEvent(event);
       }
     },
     {
-      label: '<i class="fa fa-fw fa-times"></i>',
+      label: '<i class="fa fa-fw fa-times custom-button-class"></i>',
       a11yLabel: 'Delete',
       onClick: ({ event }: { event: CalendarEvent }): void => {
         this.deleteEvent(event);
+      }
+    },
+    {
+      label: '<i class="fa fa-fw fa-check custom-button-class"></i>',
+      a11yLabel: 'Complete',
+      onClick: ({ event }: { event: CalendarEvent }): void => {
+        this.completeEvent(event);
       }
     }
   ];
 
   refresh: Subject<any> = new Subject();
   events: CalendarEvent[];
+  eventList: EventTaskInput[];
 
   currentUserSubject: BehaviorSubject<User>;
 
   ngOnInit() {
-    this.eventTaskService.getEventTasks(this.currentUserSubject.value.id).subscribe(res => {
-      this.events = res;
-      this.events.forEach(element => {
-        element.actions = this.actions
+    this.eventTaskService.getEventTasks(this.currentUserSubject.value.id)
+      .subscribe((res: EventTaskInput[]) => {
+        this.eventList = res;
+
+        let newList: CalendarEvent[] = [];
+        res.forEach(element => {
+          newList.push(this.convertToCalendarEvent(element))
+        })
+
+        this.events = newList;
+        this.events.forEach(element => {
+
+          element.actions = this.actions
+        });
       });
-    });
 
   }
   activeDayIsOpen: boolean = true;
@@ -130,24 +129,34 @@ export class PlannerViewComponent {
     event.end = newEnd;
     this.editEvent(event);
   }
-  eventAdded(newEventData: CalendarEvent): void {
-    var sendEventTask = new EventTaskInput(
-      newEventData.id as number,
-      newEventData.start,
-      newEventData.end,
-      newEventData.title,
-      newEventData.color.primary,
-      newEventData.resizable.beforeStart,
-      newEventData.draggable,
-      this.currentUserSubject.value.id,
-      this.currentUserSubject.value
-    );
-    this.eventTaskService.addEventTask(sendEventTask).subscribe(result => {
-      result.actions = this.actions;
-      this.events = [
-        ...this.events,
-        result
-      ];
+  eventAdded(newEventData: EventTaskInput): void {
+    this.eventTaskService.addEventTask(newEventData).subscribe(result => {
+
+      if (this.eventList == null) {
+        this.eventList = [result];
+      }
+      else {
+        this.eventList = [
+          ...this.eventList,
+          result
+        ];
+      }
+
+      let newCalendarEvent = this.convertToCalendarEvent(result);
+
+      // if(newCalendarEvent.end == null)
+      // {
+      //   newCalendarEvent = this.endToUndefined(newCalendarEvent);
+      // }
+      if (this.events == null) {
+        this.events = [newCalendarEvent];
+      }
+      else {
+        this.events = [
+          ...this.events,
+          newCalendarEvent
+        ];
+      }
       this.refresh.next();
     });
 
@@ -155,23 +164,14 @@ export class PlannerViewComponent {
     this.refresh.next();
   }
 
-  eventEdited(newEventData: CalendarEvent): void {
-    var sendEventTask = new EventTaskInput(
-      newEventData.id as number,
-      newEventData.start,
-      newEventData.end,
-      newEventData.title,
-      newEventData.color.primary,
-      newEventData.resizable.beforeStart,
-      newEventData.draggable,
-      this.currentUserSubject.value.id,
-      this.currentUserSubject.value
-    );
-    this.eventTaskService.editEventTask(sendEventTask).subscribe(
+  eventEdited(inputEvent: EventTaskInput): void {
+    this.eventTaskService.editEventTask(inputEvent).subscribe(
       result => {
-        result.actions = this.actions;
-        let index = this.events.indexOf(this.events.find(e => e.id === result.id));
-        this.events[index] = result;
+        let indexCalendar = this.events.indexOf(this.events.find(e => e.id === result.id));
+        let indexEventList = this.eventList.indexOf(this.eventList.find(e => e.id === result.id));
+
+        this.events[indexCalendar] = this.convertToCalendarEvent(result);
+        this.eventList[indexEventList] = result;
 
         this.closeModal();
         this.refresh.next();
@@ -180,11 +180,11 @@ export class PlannerViewComponent {
     this.refresh.next();
   }
 
-  eventDeleted(newEventData: CalendarEvent): void {
+  eventDeleted(newEventData: EventTaskInput): void {
 
-    this.eventTaskService.deleteEventTasks(newEventData.id as number).subscribe(
+    this.eventTaskService.deleteEventTasks(newEventData.id).subscribe(
       result => {
-        this.events = this.events.filter(event => event !== newEventData);
+        this.events = this.events.filter(event => event.id !== newEventData.id);
         this.closeModal();
       });
   }
@@ -200,36 +200,114 @@ export class PlannerViewComponent {
   newEvent(day: Date): void {
     this.inputEvent = {
       title: null,
-      start: null,
-      end: null
+      startDt: null,
+      endDt: null,
+      colour: null,
+      completed: false,
+      description: null,
+      draggable: true,
+      resizable: true,
+      userId: this.currentUserSubject.value.id
     };
-    this.inputEvent.start = day;
+    this.inputEvent.startDt = day;
     this.isDelete = false;
+    this.isComplete = false;
     this.modal.open(this.eventContent);
   }
 
   editEvent(event: CalendarEvent) {
     this.inputEvent = {
       title: null,
-      start: null,
-      end: null
+      startDt: null,
+      endDt: null,
+      colour: null,
+      completed: false,
+      description: null,
+      draggable: true,
+      resizable: true,
+      userId: this.currentUserSubject.value.id
     };
-    this.inputEvent = event;
+    let eventFound = this.eventList.find(e => e.id == event.id)
+    this.inputEvent = eventFound;
     this.isDelete = false;
+    this.isComplete = false;
     this.modal.open(this.eventContent);
   }
 
   deleteEvent(eventToDelete: CalendarEvent) {
     this.inputEvent = {
       title: null,
-      start: null,
-      end: null
+      startDt: null,
+      endDt: null,
+      colour: null,
+      completed: false,
+      description: null,
+      draggable: true,
+      resizable: true,
+      userId: this.currentUserSubject.value.id
     };
-    this.inputEvent = eventToDelete;
+    let eventFound = this.eventList.find(e => e.id == eventToDelete.id)
+    this.inputEvent = eventFound;
     this.isDelete = true;
+    this.isComplete = false;
     this.modal.open(this.eventContent)
   }
+  completeEvent(eventToComplete: CalendarEvent) {
+    this.inputEvent = {
+      title: null,
+      startDt: null,
+      endDt: null,
+      colour: null,
+      completed: false,
+      description: null,
+      draggable: true,
+      resizable: true,
+      userId: this.currentUserSubject.value.id
+    };
+    let eventFound = this.eventList.find(e => e.id == eventToComplete.id)
+    this.inputEvent = eventFound;
+    this.isDelete = false;
+    this.isComplete = true;
+    this.modal.open(this.eventContent)
+  }
+
   closeModal(): void {
     this.modal.dismissAll(this.eventContent);
   }
+
+  //have to manually add actions
+  convertToCalendarEvent(input: EventTaskInput): CalendarEvent {
+    var calendarEvent: CalendarEvent = {
+      id: input.id,
+      color: {
+        primary: input.colour,
+        secondary: input.colour
+      },
+      draggable: input.draggable,
+      end: input.endDt,
+      start: input.startDt,
+      title: input.title,
+      resizable: {
+        afterEnd: input.resizable,
+        beforeStart: input.resizable,
+      },
+      actions: this.actions
+    }
+    if (input.endDt == null) {
+      calendarEvent.end = new Date('09-09-9999');
+    }
+    return calendarEvent;
+  }
+
+  setviewDate(event: any) {
+    this.viewDate = event;
+    console.log(event);
+  }
+
+  beforeMonthViewRender({ body }: { body: CalendarMonthViewDay[] }): void {
+    body.forEach((day) => {
+      day.cssClass = 'cal-enabled';
+    });
+  }
+
 }

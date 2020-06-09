@@ -4,6 +4,8 @@ import { HomeComponent } from './home';
 import { LoginComponent } from './login';
 import { AuthGuard } from './_helpers';
 import { RegisterComponent } from './register/register.component';
+import { StatisticsComponent } from './statistics/statistics.component';
+import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
 
 const routes: Routes = [
     { path: '', component: HomeComponent, canActivate: [AuthGuard] },
@@ -13,7 +15,13 @@ const routes: Routes = [
         path: 'settings',
         loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule)
     },
+    {path: 'statistics', component: StatisticsComponent},
+    {
+        path: 'planner',
+        loadChildren: () => import('./planner/planner.module').then(m => m.PlannerModule)
+    },
 
+    {path: 'unauthorized', component: UnauthorizedComponent},
     // otherwise redirect to home
     { path: '**', redirectTo: '' }
 ];
