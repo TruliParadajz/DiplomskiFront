@@ -59,21 +59,21 @@ export class PlannerViewComponent {
 
   actions: CalendarEventAction[] = [
     {
-      label: '<i class="fa fa-fw fa-pencil"></i>',
+      label: '<i class="fa fa-fw fa-pencil custom-button-class"></i>',
       a11yLabel: 'Edit',
       onClick: ({ event }: { event: CalendarEvent }): void => {
         this.editEvent(event);
       }
     },
     {
-      label: '<i class="fa fa-fw fa-times"></i>',
+      label: '<i class="fa fa-fw fa-times custom-button-class"></i>',
       a11yLabel: 'Delete',
       onClick: ({ event }: { event: CalendarEvent }): void => {
         this.deleteEvent(event);
       }
     },
     {
-      label: '<i class="fa fa-fw fa-check"></i>',
+      label: '<i class="fa fa-fw fa-check custom-button-class"></i>',
       a11yLabel: 'Complete',
       onClick: ({ event }: { event: CalendarEvent }): void => {
         this.completeEvent(event);
